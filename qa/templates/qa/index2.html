@@ -1,0 +1,659 @@
+{% extends 'base_qa.html' %}
+ {% load static %}
+
+ {% block content %}
+
+ 	<!-- =-=-=-=-=-=-= HOME =-=-=-=-=-=-= -->
+	<div class="full-section search-section">
+		<div class="search-area container">
+			<h3 class="search-title">Have a Question?</h3>
+			<p class="search-tag-line">If you have any question you can ask below or enter what you are looking for!</p>
+			<form autocomplete="off" method="get" class="search-form clearfix" id="search-form">
+				<input type="text" title="* Please enter a search term!" placeholder="Type your search terms here" class="search-term " autocomplete="off">
+				<input type="submit" value="Search" class="search-btn">
+			</form>
+		</div>
+	</div>
+	<!-- =-=-=-=-=-=-= HOME END =-=-=-=-=-=-= -->
+	<!-- =-=-=-=-=-=-= Main Area =-=-=-=-=-=-= -->
+	<div class="main-content-area">
+		<!-- =-=-=-=-=-=-= Latest Questions  =-=-=-=-=-=-= -->
+		<section class="white question-tabs padding-bottom-80" id="latest-post">
+			<div class="container">
+
+				<!-- title-section -->
+
+				<div class="main-heading text-center">
+		          <h2>Recent Questions</h2>
+		          <div class="slices"><span class="slice"></span><span class="slice"></span><span class="slice"></span>
+		          </div>
+		          <p>Cras varius purus in tempus porttitor ut dapibus efficitur sagittis cras vitae lacus metus nunc vulputate facilisis nisi
+		            <br> eu lobortis erat consequat ut. Aliquam et justo ante. Nam a cursus velit</p>
+		        </div>
+
+				<!-- End title-section -->
+				
+				<div class="row">
+					<!-- Content Area Bar -->
+					<div class="col-md-8 col-sm-12 col-xs-12">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<!-- Tabs -->
+								<ul class="nav panel-tabs">
+									<li> <a data-toggle="tab" href="#tab1"><i class="icofont icon-ribbon"></i><span class="hidden-xs">Recent Questions</span></a> 
+									</li>
+									<li> <a data-toggle="tab" href="#tab2"><i class="icofont icon-layers"></i><span class="hidden-xs">Popular Responses</span></a> 
+									</li>
+									<li class="active"> <a data-toggle="tab" href="#tab3"><i class="icofont icon-global"></i><span class="hidden-xs">Recently Answered</span></a> 
+									</li>
+									<li> <a data-toggle="tab" href="#tab4"><i class="icofont icon-linegraph"></i><span class="hidden-xs">No answers</span></a> 
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="panel-body">
+							<div class="tab-content">
+								<div id="tab1" class="tab-pane active">
+									<!-- Question Listing -->
+									{% if questions %}
+									{% for question in questions %}
+									<div class="listing-grid">
+										<div class="row">
+											<div class="col-md-2 col-sm-2 col-xs-12 hidden-xs">
+												<a data-toggle="tooltip" data-placement="bottom" data-original-title="Martina Jaz" href="#">
+													{% if question.user_data.photo_profil.image.url %}
+														<img alt="" class="img-responsive center-block" src="{{ question.user_data.photo_profil.image.url }}">
+													{% else %}
+								                      <img class="img-sm"  src='{% static "qa/user.png" %}'>
+								                    {% endif %}
+												</a>
+											</div>
+											<div class="col-md-7 col-sm-8  col-xs-12">
+												<h3><a  href="/q/{{ question.id }}/"> {{ question.question_title|truncatechars_html:50 }}</a></h3>
+												<div class="listing-meta"> <span><i class="fa fa-clock-o" aria-hidden="true"></i>{{ question.pub_date}}</span>  <span><i class="fa fa fa-eye" aria-hidden="true"></i> {{ question.views }} Views</span> 
+												</div>
+											</div>
+											<div class="col-md-3 col-sm-2 col-xs-12">
+												<ul class="question-statistic">
+													<li > <a data-toggle="tooltip" data-placement="bottom" data-original-title="Answers"><span>{{ question.answer_set.count }}</span></a> 
+													</li>
+													<li> <a data-toggle="tooltip" data-placement="bottom" data-original-title="Votes"><span>{{ question.qvoter_set.count }}</span></a> 
+													</li>
+												</ul>
+											</div>
+											<div class="col-md-10 col-sm-10  col-xs-12">
+												<p>{{ question.question_text| safe }}</p>
+												<div class="pull-right tagcloud">
+													{% for tag in question.tags.all %}
+												 	<a href="/tag/{{ tag.slug|slugify }}/">{{ tag.slug }}</a>
+												 	{% endfor %}
+												</div>
+											</div>
+
+
+										</div>
+
+
+									</div>
+									{% endfor %}
+									{% endif %}
+									<!-- Question Listing End -->
+								</div>
+								<!-- Pagination View More -->
+								<div class="text-center clearfix">
+									<!-- <button class="btn btn-primary btn-lg">View All Question</button> -->
+									<div class="pagination center-block">
+									          <span class="step-links">
+									           <div class="clearfix"></div>
+									            <nav aria-label="">
+									              <ul class="pager">
+									                {% if questions.has_previous %}
+									                    <li><a href="?page={{ questions.previous_page_number }}">Précédent</a></li>
+									                {% endif %}
+
+									                 <span class="current">
+									                   {{ questions.number }} / {{ questions.paginator.num_pages }}
+									                </span>
+
+									                {% if questions.has_next %}
+									                    <li><a href="?page={{ questions.next_page_number }}">Suivant</a></li>
+									                {% endif %}
+									              </ul>
+									            </nav>
+									          </span>
+									</div>
+								</div>
+								<!-- Pagination View More End -->
+							</div>
+						</div>
+					</div>
+					
+					<!-- ************************** -->
+
+					<!-- Right Sidebar -->
+					<div class="col-md-3 col-sm-12 col-xs-12 clearfix pull-right">
+
+			            <!-- sidebar -->
+			            <div class="side-bar">
+			            	<!-- widget -->
+				              <div class="widget">
+				                <div class="recent-comments">
+				                  <hr class="widget-separator no-margin">
+				                  <div style="padding: 15px; ">	
+				                  	<h4>Total Questions : {{ count_q }}</h4>
+				                  	<h4>Total Questions : {{ count_a }}</h4>
+				                  </div>	
+				                </div>
+				              </div>
+				              <!-- widget end -->
+
+
+			            	<!-- widget -->
+				              <div class="widget">
+				                <div class="recent-comments">
+				                  <h2>Recent Comments</h2>
+				                  <hr class="widget-separator no-margin">
+				                  <div style="padding: 15px; ">	
+				                  	<a style="color:#FFFFFF;" class="label label-info" href="#"># material</a>
+				                  	<a class="label label-info" href="#">material</a>
+				                  </div>	
+				                </div>
+				              </div>
+				              <!-- widget end -->
+
+			              <!-- widget -->
+			              <div class="widget">
+			                <h2>Top Authors</h2>
+			                <hr class="widget-separator no-margin">
+			                <div class="media-group">
+			                  <div class="media-group-item">
+			                    <div class="media">
+			                      <div class="media-left">
+			                        <div class="avatar avatar-md avatar-circle"> <img alt="" class="" src="images/authors/1.jpg"> </div>
+			                      </div>
+			                      <div class="media-body">
+			                        <h5 class="media-heading"><a href="profile.html">John Doe</a></h5>
+			                        <small class="media-meta">Software Engineer</small>
+			                        <div class="points"><span>Points : </span>9958</div>
+			                      </div>
+			                    </div>
+			                  </div>
+			                  <!-- .media-group-item -->
+
+			                  <div class="media-group-item">
+			                    <div class="media">
+			                      <div class="media-left">
+			                        <div class="avatar avatar-md avatar-circle"> <img alt="" class="" src="images/authors/2.jpg"> </div>
+			                      </div>
+			                      <div class="media-body">
+			                        <h5 class="media-heading"><a href="profile.html">Adam Khaury</a></h5>
+			                        <small class="media-meta">Web Designer</small>
+			                        <div class="points"><span>Points : </span>7910</div>
+			                      </div>
+			                    </div>
+			                  </div>
+			                  <!-- .media-group-item -->
+
+			                  <div class="media-group-item">
+			                    <div class="media">
+			                      <div class="media-left">
+			                        <div class="avatar avatar-md avatar-circle"> <img alt="" class="" src="images/authors/3.jpg"> </div>
+			                      </div>
+			                      <div class="media-body">
+			                        <h5 class="media-heading"><a href="profile.html">John Doe</a></h5>
+			                        <small class="media-meta">Web Developer</small>
+			                        <div class="points"><span>Points : </span>7458</div>
+			                      </div>
+			                    </div>
+			                  </div>
+			                  <!-- .media-group-item -->
+
+			                  <div class="media-group-item">
+			                    <div class="media">
+			                      <div class="media-left">
+			                        <div class="avatar avatar-md avatar-circle"> <img alt="" class="" src="images/authors/4.jpg"> </div>
+			                      </div>
+			                      <div class="media-body">
+			                        <h5 class="media-heading"><a href="profile.html">Sara Smith</a></h5>
+			                        <small class="media-meta">UI/UX Designer</small>
+			                        <div class="points"><span>Points : </span>6458</div>
+			                      </div>
+			                    </div>
+			                  </div>
+			                  <!-- .media-group-item -->
+			
+			                  <div class="media-group-item">
+			                    <div class="media">
+			                      <div class="media-left">
+			                        <div class="avatar avatar-md avatar-circle"> <img alt="" class="" src="images/authors/7.jpg"> </div>
+			                      </div>
+			                      <div class="media-body">
+			                        <h5 class="media-heading"><a href="profile.html">Sally Sally</a></h5>
+			                        <small class="media-meta">Teacher Assistant</small>
+			                        <div class="points"><span>Points : </span>5558</div>
+			                      </div>
+			                    </div>
+			                  </div>
+			                  <!-- .media-group-item -->
+			                  <div class="media-group-item">
+			                    <div class="media">
+			                      <div class="media-left">
+			                        <div class="avatar avatar-md avatar-circle"> <img alt="" class="" src="images/authors/8.jpg"> </div>
+			                      </div>
+			                      <div class="media-body">
+			                        <h5 class="media-heading"><a href="profile.html">Sally Sally</a></h5>
+			                        <small class="media-meta">Teacher Assistant</small>
+			                        <div class="points"><span>Points : </span>5558</div>
+			                      </div>
+			                    </div>
+			                  </div>
+			                  <!-- .media-group-item -->
+			                </div>
+			              </div>
+			              <!-- widget end -->
+
+			              <!-- widget -->
+			              <div class="widget">
+			                <div class="recent-comments">
+			                  <h2>Recent Comments</h2>
+			                  <hr class="widget-separator no-margin">
+			                  <ul id="recentcomments">
+			                    <li class="recentcomments"> <span class="comment-author-link">John Doe</span> on <a href="">bootstrap vs foundation</a> </li>
+			                    <li class="recentcomments"> <span class="comment-author-link">Emily Copper</span> on <a href="">how to get data from URL in PHP</a> </li>
+			                    <li class="recentcomments"> <span class="comment-author-link">Alex Martin</span> on <a href="">My SQL PHP Multi Layer Drop Down List from Databse</a> </li>
+			                    <li class="recentcomments"> <span class="comment-author-link">Tina Martin</span> on <a href="">PHP Multi Layer Drop Down List from Databse</a> </li>
+			                    <li class="recentcomments"> <span class="comment-author-link">Alex Henz</span> on <a href="">Can't use custom width with Angular-Slick</a> </li>
+			                    <li class="recentcomments"> <span class="comment-author-link">Coty Embry</span> on <a href="">Use Digital Ocean to create node.js server or creating website on Wordpress?</a> </li>
+			                  </ul>
+			                </div>
+			              </div>
+			              <!-- widget end -->
+
+			            </div>
+			            <!-- sidebar end -->
+			          </div>
+					<!-- Right Sidebar End -->
+
+					<div class="clearfix"></div>
+				</div>
+			</div>
+			<!-- end container -->
+		</section>
+		<!-- =-=-=-=-=-=-= Latest Questions  End =-=-=-=-=-=-= -->
+		<!-- =-=-=-=-=-=-= SEPARATOR Fun Facts =-=-=-=-=-=-= -->
+		<div class="parallex section-padding fun-facts-bg text-center" data-stellar-background-ratio="0.1">
+			<div class="container">
+
+				<div class="row">
+					<!-- countTo -->
+					<div class="col-xs-6 col-sm-3 col-md-3">
+						<div class="statistic-percent" data-perc="356">
+							<div class="facts-icons"> <span class="icon-trophy"></span> 
+							</div>
+							<div class="fact"> <span class="percentfactor">356</span>
+								<p>Happy Clients</p>
+							</div>
+							<!-- end fact -->
+						</div>
+						<!-- end statistic-percent -->
+					</div>
+					<!-- end col-xs-6 col-sm-3 col-md-3 -->
+					<!-- countTo -->
+					<div class="col-xs-6 col-sm-3 col-md-3">
+						<div class="statistic-percent" data-perc="126">
+							<div class="facts-icons"> <span class="icon-trophy"></span> 
+							</div>
+							<div class="fact"> <span class="percentfactor">126</span>
+								<p>Order Received</p>
+							</div>
+							<!-- end fact -->
+						</div>
+						<!-- end statistic-percent -->
+					</div>
+					<!-- end col-xs-6 col-sm-3 col-md-3 -->
+					<!-- countTo -->
+					<div class="col-xs-6 col-sm-3 col-md-3">
+						<div class="statistic-percent" data-perc="274">
+							<div class="facts-icons"> <span class="icon-chat"></span> 
+							</div>
+							<div class="fact"> <span class="percentfactor">274</span>
+								<p>Free Delivery</p>
+							</div>
+							<!-- end fact -->
+						</div>
+						<!-- end statistic-percent -->
+					</div>
+					<!-- end col-xs-6 col-sm-3 col-md-3 -->
+					<!-- countTo -->
+					<div class="col-xs-6 col-sm-3 col-md-3">
+						<div class="statistic-percent" data-perc="434">
+							<div class="facts-icons"> <span class="icon-megaphone"></span> 
+							</div>
+							<div class="fact"> <span class="percentfactor">434</span>
+								<p>Completed Projects</p>
+							</div>
+							<!-- end fact -->
+						</div>
+						<!-- end statistic-percent -->
+					</div>
+					<!-- end col-xs-6 col-sm-3 col-md-3 -->
+				</div>
+				<!-- End row -->
+			</div>
+			<!-- end container -->
+		</div>
+		<!-- =-=-=-=-=-=-= SEPARATOR END =-=-=-=-=-=-= -->
+		<!-- =-=-=-=-=-=-= Blog & News =-=-=-=-=-=-= -->
+		<section id="blog" class="custom-padding">
+			<div class="container">
+				<!-- title-section -->
+				<div class="main-heading text-center">
+					<h2>Latest Articles</h2>
+					<div class="slices"><span class="slice"></span><span class="slice"></span><span class="slice"></span>
+					</div>
+					<p>Cras varius purus in tempus porttitor ut dapibus efficitur sagittis cras vitae lacus metus nunc vulputate facilisis nisi
+						<br>eu lobortis erat consequat ut. Aliquam et justo ante. Nam a cursus velit</p>
+				</div>
+				<!-- End title-section -->
+				<!-- Row -->
+				<div class="row">
+					<!-- Blog Grid -->
+					<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+						<div class="blog-grid">
+							<div class="blog-image">
+								<img alt="blog-image1" class="img-responsive" src="images/blog/1.jpg">
+							</div>
+							<div class="blog-content">
+								<h5><a href="blog-detail.html">How to prevent my website from being scrolled horizontally?</a></h5>
+								<ul class="post-meta">
+									<li>By Admin</li>
+									<li>Php</li>
+									<li>27 July 2016</li>
+								</ul>
+								<p>We can make table scrollable by adding table-responsive class to it, but how can we loop it so that once the loop ends..</p>
+							</div>
+							<div class="blog-footer">
+								<ul class="like-comment">
+									<li><a href="#"><i class="icon-heart"></i>23</a>
+									</li>
+									<li><a href="#"><i class="icon-chat"></i>32</a>
+									</li>
+								</ul> <a href="#" class="more-btn pull-right"><i class="fa fa-long-arrow-right"></i> MORE</a> 
+							</div>
+						</div>
+					</div>
+					<!-- Blog Grid -->
+					<!-- Blog Grid -->
+					<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+						<div class="blog-grid">
+							<div class="blog-image">
+								<img alt="blog-image1" class="img-responsive" src="images/blog/2.jpg">
+							</div>
+							<div class="blog-content">
+								<h5><a href="blog-detail.html">What's the best way to implement a 2D interval search in C++?</a></h5>
+								<ul class="post-meta">
+									<li>By Admin</li>
+									<li>Php</li>
+									<li>27 July 2016</li>
+								</ul>
+								<p>We can make table scrollable by adding table-responsive class to it, but how can we loop it so that once the loop ends..</p>
+							</div>
+							<div class="blog-footer">
+								<ul class="like-comment">
+									<li><a href="#"><i class="icon-heart"></i>23</a>
+									</li>
+									<li><a href="#"><i class="icon-chat"></i>32</a>
+									</li>
+								</ul> <a href="#" class="more-btn pull-right"><i class="fa fa-long-arrow-right"></i> MORE</a> 
+							</div>
+						</div>
+					</div>
+					<!-- Blog Grid -->
+					<!-- Blog Grid -->
+					<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+						<div class="blog-grid">
+							<div class="blog-image">
+								<img alt="blog-image1" class="img-responsive" src="images/blog/3.jpg">
+							</div>
+							<div class="blog-content">
+								<h5><a href="blog-detail.html"> Access a list within an element of a Pandas DataFrame </a></h5>
+								<ul class="post-meta">
+									<li>By Admin</li>
+									<li>Php</li>
+									<li>27 July 2016</li>
+								</ul>
+								<p>We can make table scrollable by adding table-responsive class to it, but how can we loop it so that once the loop ends..</p>
+							</div>
+							<div class="blog-footer">
+								<ul class="like-comment">
+									<li><a href="#"><i class="icon-heart"></i>23</a>
+									</li>
+									<li><a href="#"><i class="icon-chat"></i>32</a>
+									</li>
+								</ul> <a href="#" class="more-btn pull-right"><i class="fa fa-long-arrow-right"></i> MORE</a> 
+							</div>
+						</div>
+					</div>
+					<!-- Blog Grid -->
+					<div class="clearfix"></div>
+					<div class="text-center clearfix section-padding-40"> <a href="javascript:void(0)" class="btn btn-lg btn-primary">View all Blog Post</a> 
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<!-- Row End -->
+			</div>
+			<!-- end container -->
+		</section>
+		<!-- =-=-=-=-=-=-= Blog & News end =-=-=-=-=-=-= -->
+		<!-- =-=-=-=-=-=-= Testimonials =-=-=-=-=-=-= -->
+		<section data-stellar-background-ratio="0.1" class="testimonial-bg parallex">
+			<div class="container">
+				<!-- Row -->
+				<div class="row">
+					<!-- Blog Grid -->
+					<div class="col-md-8 ">
+						<div id="owl-slider" class="happy-client">
+							<div class="item"> <i class="fa fa-quote-left"> </i>
+								<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took.</p>
+								<div class="client-info-wrap clearfix">
+									<div class="client-img">
+										<img class="img-circle" src="../../../theemon.com/d/designagency/LivePreview/assets/images/client-img-two.jpg" alt="" />
+									</div>
+									<div class="client-info"> <strong> Muhammad Umair </strong>  <i class="fa fa-star grey-star"> </i>  <i class="fa fa-star"> </i>  <i class="fa fa-star"> </i>  <i class="fa fa-star"> </i>  <i class="fa fa-star"> </i> 
+									</div>
+								</div>
+							</div>
+							<div class="item"> <i class="fa fa-quote-left"> </i>
+								<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took.</p>
+								<div class="client-info-wrap clearfix">
+									<div class="client-img">
+										<img class="img-circle" src="../../../theemon.com/d/designagency/LivePreview/assets/images/client-img-two.jpg" alt="" />
+									</div>
+									<div class="client-info"> <strong> Muhammad Umair </strong>  <i class="fa fa-star grey-star"> </i>  <i class="fa fa-star"> </i>  <i class="fa fa-star"> </i>  <i class="fa fa-star"> </i>  <i class="fa fa-star"> </i> 
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- Blog Grid -->
+					<!-- Blog Grid -->
+					<div class="col-md-4 no-padding">
+						<div class="success-stories">
+							<div class="main-heading text-center">
+								<h2>Success Stories</h2>
+								<hr class="main">
+								<p>Cras varius purus in tempus porttitor ut dapibus efficitur sagittis cras vitae lacus metus nunc vulputate facilisis nisi
+									<br>eu lobortis erat consequat ut. Aliquam et justo ante. Nam a cursus velit</p>
+							</div>
+						</div>
+					</div>
+					<!-- Blog Grid -->
+					<div class="clearfix"></div>
+				</div>
+				<!-- Row End -->
+			</div>
+			<!-- end container -->
+		</section>
+		<!-- =-=-=-=-=-=-= Testimonials  =-=-=-=-=-=-= -->
+		<!-- =-=-=-=-=-=-= Our Clients =-=-=-=-=-=-= -->
+		<section class="custom-padding" id="clients">
+			<div class="container">
+				<!-- Row -->
+				<div class="row">
+					<!-- col-md-2 client-block -->
+					<div class="col-md-2 col-sm-4 col-xs-6 client-block">
+						<!-- client-item client-item-style-2 -->
+						<div class="client-item client-item-style-2">
+							<a title="Client Logo" href="#">
+								<img alt="Clients Logo" src="images/clients/client_5.png">
+							</a>
+						</div>
+						<!-- /client-item client-item-style-2 -->
+					</div>
+					<!-- /col-md-2 client-block -->
+					<!-- col-md-2 client-block -->
+					<div class="col-md-2 col-xs-6 col-sm-4 client-block">
+						<!-- client-item client-item-style-2 -->
+						<div class="client-item client-item-style-2">
+							<a title="Client Logo" href="#">
+								<img alt="Clients Logo" src="images/clients/client_6.png">
+							</a>
+						</div>
+						<!-- /client-item client-item-style-2 -->
+					</div>
+					<!-- /col-md-2 client-block -->
+					<!-- col-md-2 client-block -->
+					<div class="col-md-2  col-xs-6 col-sm-4 client-block">
+						<!-- client-item client-item-style-2 -->
+						<div class="client-item client-item-style-2">
+							<a title="Client Logo" href="#">
+								<img alt="Clients Logo" src="images/clients/client_7.png">
+							</a>
+						</div>
+						<!-- /client-item client-item-style-2 -->
+					</div>
+					<!-- /col-md-2 client-block -->
+					<!-- col-md-2 client-block -->
+					<div class="col-md-2 col-xs-6 col-sm-4 client-block">
+						<!-- client-item client-item-style-2 -->
+						<div class="client-item client-item-style-2">
+							<a title="Client Logo" href="#">
+								<img alt="Clients Logo" src="images/clients/client_8.png">
+							</a>
+						</div>
+						<!-- /client-item client-item-style-2 -->
+					</div>
+					<!-- /col-md-2 client-block -->
+					<!-- col-md-2 client-block -->
+					<div class="col-md-2 col-xs-6 col-sm-4 client-block">
+						<!-- client-item client-item-style-2 -->
+						<div class="client-item client-item-style-2">
+							<a title="Client Logo" href="#">
+								<img alt="Clients Logo" src="images/clients/client_9.png">
+							</a>
+						</div>
+						<!-- /client-item client-item-style-2 -->
+					</div>
+					<!-- /col-md-2 client-block -->
+					<!-- col-md-2 client-block -->
+					<div class="col-md-2 col-xs-6 col-sm-4 client-block">
+						<!-- client-item client-item-style-2 -->
+						<div class="client-item client-item-style-2">
+							<a title="Client Logo" href="#">
+								<img alt="Clients Logo" src="images/clients/client_10.png">
+							</a>
+						</div>
+						<!-- /client-item client-item-style-2 -->
+					</div>
+					<!-- /col-md-2 client-block -->
+				</div>
+				<!-- Row End -->
+			</div>
+			<!-- end container -->
+		</section>
+		<!-- =-=-=-=-=-=-= Our Clients -end =-=-=-=-=-=-= -->
+        
+		<!-- =-=-=-=-=-=-= Download Apps =-=-=-=-=-=-= -->
+		<div class="parallex section-padding  our-apps text-center">
+			<div class="container">
+				<!-- title-section -->
+				<div class="main-heading text-center">
+					<h2>Download Our Apps</h2>
+					<hr class="main">
+				</div>
+				<!-- End title-section -->
+				<div class="row">
+					<div class="app-content">
+						<!-- Single download start \-->
+						<div class="col-md-4 col-sm-4">
+							<a href="#" class="app-grid"> <span class="app-icon"> <img alt="#" src="images/mobile.png"> </span>
+								<div class="app-title">
+									<h5>Available on the</h5>
+									<h3>iOS App Store</h3>
+								</div>
+							</a>
+						</div>
+						<!--/ Single download end-->
+						<!-- Single download start \-->
+						<div class="col-md-4 col-sm-4">
+							<a href="#" class="app-grid"> <span class="app-icon"> <img alt="#" src="images/play-store.png"> </span>
+								<div class="app-title">
+									<h5>Available on the</h5>
+									<h3>Google Store</h3>
+								</div>
+							</a>
+						</div>
+						<!--/ Single download end-->
+						<!-- Single download start \-->
+						<div class="col-md-4  col-sm-4">
+							<a href="#" class="app-grid"> <span class="app-icon"> <img alt="#" src="images/windows.png"> </span>
+								<div class="app-title">
+									<h5>Available on the</h5>
+									<h3>Windows Store</h3>
+								</div>
+							</a>
+						</div>
+						<!--/ Single download end-->
+					</div>
+				</div>
+				<!-- End row -->
+			</div>
+			<!-- end container -->
+		</div>
+		<!-- =-=-=-=-=-=-= Download Apps END =-=-=-=-=-=-= -->
+        
+	</div>
+	<!-- =-=-=-=-=-=-= Main Area End =-=-=-=-=-=-= -->
+	<section id="social-media">
+		<div class="block no-padding">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="social-bar">
+						<ul>
+							<li class="social1">
+								<a title="" href="#">
+									<img alt="" src="images/facebook.png"> <span>Join Us On<strong>FACEBOOK</strong></span> 
+								</a>
+							</li>
+							<li class="social2">
+								<a title="" href="#">
+									<img alt="" src="images/twitter.png"> <span>Join Us On<strong>TWIITER</strong></span> 
+								</a>
+							</li>
+							<li class="social3">
+								<a title="" href="#">
+									<img alt="" src="images/google-plus.png"> <span>Join Us On<strong>GOOGLE PLUS</strong></span> 
+								</a>
+							</li>
+							<li class="social4">
+								<a title="" href="#">
+									<img alt="" src="images/linkedin.png"> <span>Join Us On<strong>LINKED IN</strong></span> 
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+  {% endblock content %}

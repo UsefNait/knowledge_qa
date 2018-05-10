@@ -1,0 +1,96 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<head>
+    <title> {% block title %} {% endblock title %} </title>
+
+
+    {% block stylesheets %}
+
+        <link rel="stylesheet" href="{% static 'css/main_style.css' %}">
+
+    {% endblock stylesheets %}
+
+
+
+</head>
+<!--  Menu general -->
+
+<div class="topnav" id="myTopnav">
+    <a href="#home" class="active f-left">Acceuil</a>
+
+    <a href="#about" class="border-left-beige f-left">Q&A</a>
+    <a href="#about"class="border-left-beige f-left">News</a>
+    <a href="#news" class="border-left-beige f-left" id="linkMarketPlace">Market Place</a>
+    <a href="#contact" class="border-left-beige f-left .linkELearning" id="linkELearning">E-learning</a>
+    <a href="/reseausocial/home" class="border-left-beige f-left" id="linkReseauSocial">Réseau social</a>
+    <a href="#about" class="border-left-beige f-left" id="linkAppelsOffres">Appels d'offres</a>
+
+    <div class="dropdowncss" id="dropdown1" >
+        <button class="dropbtn">Plus
+        <i class="fa fa-caret-down"></i>
+        </button>
+        <div class="dropdown-content">
+            <a href="/reseausocial/home" class="border-left-beige f-left">Réseau social</a>
+            <a href="#about" class="border-left-beige f-left">Appels d'offres</a>
+        </div>
+    </div>
+
+    <div class="dropdowncss" id="dropdown2" >
+        <button class="dropbtn">Plus
+        <i class="fa fa-caret-down"></i>
+        </button>
+        <div class="dropdown-content">
+            <a href="#news" class="border-left-beige f-left">Market Place</a>
+            <a href="#contact" class="border-left-beige f-left">E-learning</a>
+            <a href="/reseausocial/home" class="border-left-beige f-left">Réseau social</a>
+            <a href="#about" class="border-left-beige f-left">Appels d'offres</a>
+        </div>
+    </div>
+
+
+
+  {% if user.is_authenticated %}
+    <a href="/main/logout" class="border-left-beige f-right">Se deconnecter</a>
+  {% else %}
+    <a href="/main/login" class="border-left-beige f-right">Se connecter</a>
+    <a href="/main/signup" class="border-left-beige f-right" >S'inscrire</a>
+  {% endif %}
+
+  <a href="/main/contactus" class="border-left-beige f-right" style="border-left: 1px solid beige;">Contactez nous</a>
+
+  <a href="javascript:void(0);" class="icon" onclick="myFunction()">&#9776;</a>
+</div>
+
+
+
+
+
+<!-- Fin Menu general -->
+{% block menu %}
+{% endblock menu %}
+
+
+
+
+{% block banner %}
+{% endblock banner %}
+
+{% block content %}
+{% endblock content %}
+
+
+{% block footer %}
+{% endblock footer %}
+
+
+
+
+{% block scripts %}
+<script src="{% static 'js/main_js.js' %}"></script>
+{% endblock scripts %}
+
+
+</body>
+
+
+</html>
