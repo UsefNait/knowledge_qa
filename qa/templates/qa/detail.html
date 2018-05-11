@@ -83,6 +83,11 @@
               <div class="row">
                 <div class="col-md-12 col-sm-12 col-xs-12">
                   <h3><a  href="#"> {{ question.question_title }} </a></h3>
+                  {% if user.id == question.user_data.user.id  %}
+                    <form action="/updateq/{{ question.id }}" >
+                      <button class="btncomt pull-right" > <li class="glyphicon glyphicon-edit" ></li> update</button>
+                    </form>
+                  {% endif %}
                   <div class="listing-meta"> <span><i class="fa fa-clock-o" aria-hidden="true"></i>{{ question.pub_date }}</span> <span><i class="fa fa fa-eye" aria-hidden="true"></i> 750 Views</span> </div>
                 </div>
                 <div class="col-md-12 col-sm-12 col-xs-12">
@@ -136,10 +141,19 @@
                 </div>
                 <div class="media-body">
                   <div class="mar-btm">
+
+                    {% if user.id == question.user_data.user.id  %}
+                      <form>
+                        <button class="btncomt pull-right" > <li class="glyphicon glyphicon-edit" ></li> update</button>
+                      </form>
+                    {% endif %}
+
                     <h4><a href="#" class="btn-link text-semibold media-heading box-inline">{{ answer.user_data.user.username }}</a></h4>
                     <p class="text-muted text-sm"><i class="fa fa-calendar fa-lg"></i> {{ answer.pub_date }}</p>
+
                   </div>
                   <p class="qtext">
+                    <br>
                   	{{ answer.answer_text| safe }}
                   </p>
 
@@ -233,22 +247,24 @@ function myFunction(a_id) {
             {% endif %}
 
 
-              <form method="post" action="/answer/">
+             
+
+            {% endif %}
+
+             <form method="post" action="/answer/">
                  {% csrf_token %}
                 <div class="form-group">
-	                  <label>Post Your Ans</label>
-	                  <div>
-	                  	{{ form_a.media }}
-	                  	{{ form_a.answer_text }}
-	               	</div>
-	            </div>
+                    <label>Post Your Ans</label>
+                    <div>
+                      {{ form_a.media }}
+                      {{ form_a.answer_text }}
+                  </div>
+              </div>
                 <input type="hidden" name="question" value="{{ question.id }}">
                 <input type="hidden" name="user" value="{{ user.id }}">
                 <button class="btn btn-primary btn-lg btn-block">Post Your Answer</button>
 
               </form>
-
-            {% endif %}
             <!-- Thread Reply End -->
           </div>
 

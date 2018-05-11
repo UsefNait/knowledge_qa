@@ -10,7 +10,45 @@ from django.contrib.auth.decorators import login_required
 from .forms import UserProfileForm , QuestionForm , AnswerForm
 from main_app.forms import userProfile , userform ,PhotoForm
 from main_app.models import *
+from django.shortcuts import get_object_or_404 , render_to_response, render
+from django.core import serializers
+from django.db.models import Q
 # Create your views here.
+
+def mySession(request):
+        # ***************** session ***********************
+    count_q = Question.objects.count()
+    count_a = Answer.objects.count()    
+    if 'count_q' not in request.session:
+        request.session["count_q"] = count_q
+    if 'count_a' not in request.session:
+        request.session["count_a"] = count_a
+   
+    if 'top_questions' not in request.session:
+        request.session['top_questions']= list(Question.objects.order_by('-views').filter(reward__gte=1)[:5].values("id","categorie","closed","user_data","views","reward","tags","question_title","question_text"))
+   
+    if 'dernier_null_list' not in request.session:
+        request.session['dernier_null_list']= list(Question.objects.order_by('-pub_date').filter(answer__isnull=True)[:5].values("id","categorie","closed","user_data","views","reward","tags","question_title","question_text"))
+   
+    if 'categories' not in request.session:
+        request.session['categories']= list(Categorie.objects.all().values("id","title_categorie"))
+    
+    if 'tags' not in request.session:    
+        request.session['tags']= list(Tag.objects.all().values("id","slug"))
+
+    if request.user.is_anonymous == False:
+        user_id = request.user.id
+        user_ob = User.objects.get(id=user_id)
+        profil = Profil.objects.get(user=user_ob) 
+        request.session['id_profil'] =profil.id
+        try:
+            request.session['img_profil'] =profil.photo_profil.image.url
+        except Exception as e:
+            pass
+            
+
+    # ***************** end session ***********************
+
 
 def index1(request):
 
@@ -23,8 +61,16 @@ def index1(request):
 
     tags = Tag.objects.all()
 
-    count_q = Question.objects.count
-    count_a = Answer.objects.count
+    count_q = Question.objects.count()
+    count_a = Answer.objects.count()
+
+    mySession(request)
+    # food_list = [f for f in Question.objects.order_by('-pub_date')]
+    # data = serializers.serialize("xml", Question.objects.order_by('-pub_date'))
+    # food_list.append()
+
+    # request.session['data']= list(Question.objects.all().values("question_title","question_text"))
+    
 
     paginator = Paginator(dernier_question_list, 10)
     page = request.GET.get('page')
@@ -38,12 +84,8 @@ def index1(request):
 
     context = {
         'questions': questions,
-        'count_q': count_q,
-        'count_a': count_a,
         'question_null': dernier_null_list,
         'question_top': top_questions,
-        'tags' : tags,
-        'categories':categories,
     }
 
     if request.user.is_anonymous:
@@ -53,6 +95,11 @@ def index1(request):
     user_ob = User.objects.get(id=user_id)
     profil = Profil.objects.get(user=user_ob) 
     context['profil'] =profil    
+    # return render(request,'qa/index2.html', context)
+    # return render_to_response('qa/index1.html', context, context_instance=RequestContext(request))
+    template = loader.get_template('qa/index2.html')
+    # return HttpResponse(template.render(context))
+    # return HttpResponse(template.render(context, request))
     return render(request,'qa/index2.html', context)
 
 def index2(request):
@@ -66,29 +113,14 @@ def add(request):
     top_questions_null = Question.objects.order_by('-reward').filter(answer__isnull=True,reward__gte=1)[:10]
     top_questions = Question.objects.order_by('-views').filter(reward__gte=1)[:10]
 
-    categories = Categorie.objects.all()
-
-    tags = Tag.objects.all()
-
-    count_q = Question.objects.count
-    count_a = Answer.objects.count
-
-    context = {
-        'count_q': count_q,
-        'count_a': count_a,
-        'question_null': dernier_null_list,
-        'question_top': top_questions,
-        'tags' : tags,
-        'categories':categories,
-    }
-
-
+    context = {}
     form = QuestionForm()
     context['form'] = form
     if request.user.is_anonymous == True:
         return HttpResponseRedirect("/main/login/")
         # return render(request, 'qa/login.html', locals())
 
+    mySession(request)
     if request.method == 'POST':
         form = QuestionForm(request.POST)
         if form.is_valid():
@@ -142,6 +174,8 @@ def detail(request, question_id):
     top_questions_null = Question.objects.order_by('-reward').filter(answer__isnull=True,reward__gte=1)[:10]
     top_questions = Question.objects.order_by('-views').filter(reward__gte=1)[:10]
 
+    mySession(request)
+
     categories = Categorie.objects.all()
 
     tags = Tag.objects.all()
@@ -158,7 +192,7 @@ def detail(request, question_id):
         profil = Profil.objects.get(user=user_ob)
         nbQusetion = profil.question_set.count
         nbAnswer = profil.answer_set.count 
-        id_img = profil.photo_profil.image
+        # id_img = profil.photo_profil.image
 
 
     try:
@@ -201,6 +235,10 @@ def add_answer(request):
     dernier_null_list = Question.objects.order_by('-pub_date').filter(answer__isnull=True)[:10]
     top_questions_null = Question.objects.order_by('-reward').filter(answer__isnull=True,reward__gte=1)[:10]
     top_questions = Question.objects.order_by('-views').filter(reward__gte=1)[:10]
+
+
+    mySession(request)
+
 
     categories = Categorie.objects.all()
 
@@ -268,6 +306,9 @@ def thumb(request, user_id, question_id, op_code):
 
     answer_list = question.answer_set.order_by('-votes')
 
+    mySession(request)
+
+
     paginator = Paginator(answer_list, 10)
     page = request.GET.get('page')
     try:
@@ -317,6 +358,8 @@ def vote(request, user_id, answer_id, question_id, op_code):
     question = Question.objects.get(pk=question_id)
 
     answer_list = question.answer_set.order_by('-votes')
+
+    mySession(request)
 
     paginator = Paginator(answer_list, 10)
     page = request.GET.get('page')
@@ -369,6 +412,8 @@ def comment(request, answer_id):
     tags = Tag.objects.all()
     count_q = Question.objects.count
     count_a = Answer.objects.count
+
+    mySession(request)
 
     context = {}
 
@@ -429,81 +474,213 @@ def comment(request, answer_id):
 
 
 
+def search(request):
+    mySession(request)
 
-# def profil(request):
-#     # user_id = request.POST['user']
-#     user_id = request.user.id
-#     user_ob = User.objects.get(id=user_id)
-#     profil = Profil.objects.get(user=user_ob)
-#     nbQusetion = profil.question_set.count
-#     nbAnswer = profil.answer_set.count 
-#     mesQusetion = profil.question_set.all()
-#     form = userProfile(instance=profil)
-#     formuser = userform(instance = user_ob)
-#     formimg = PhotoForm()
-#     id_img = profil.photo_profil.image
-#     context = {
-#         'nbQusetion': nbQusetion,
-#         'nbAnswer': nbAnswer ,
-#         'profil' : profil ,
-#         'mesQusetion':mesQusetion,
-#         'form':form,
-#         'formuser':formuser,
-#         'formimg':formimg ,
-#         'id_img':id_img,
-#     }
-#     return render(request,'qa/updateprofil.html', context)
+    if request.method == 'POST':
+        word = request.POST['query']
+        question_list = Question.objects.filter(Q(question_text__contains=word) | Q(question_title__contains=word))
+        paginator = Paginator(question_list, 10)
+        page = request.GET.get('page')
+        try:
+            questions = paginator.page(page)
+        except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+            questions = paginator.page(1)
+        except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+            questions = paginator.page(paginator.num_pages)
 
-# def updateprofil(request):
+        dernier_null_list = Question.objects.order_by('-pub_date').filter(tags__slug__contains=word,answer__isnull=True)[:10]
+        top_questions = Question.objects.order_by('-reward').filter(tags__slug__contains=word,answer__isnull=True,reward__gte=1)[:10]
+        count_q = Question.objects.count
+        count_a = Answer.objects.count
 
-#     if request.method == 'POST':
-#         user_id = request.POST['user']
-#         # user_id = request.user.id
-#         user_ob = User.objects.get(id=user_id)
-#         profil = Profil.objects.get(user=user_ob)
-#         nbQusetion = profil.question_set.count
-#         nbAnswer = profil.answer_set.count 
-#         mesQusetion = profil.question_set.all()
+        template = loader.get_template('qa/index.html')
+        tags = Tag.objects.all()
 
-#         profil.website = request.POST['website']
-#         profil.facebook = request.POST['facebook']
-#         profil.youtube = request.POST['youtube']
-#         profil.instagram = request.POST['instagram']
-#         profil.linkedin = request.POST['linkedin']
-#         profil.tel = request.POST['tel']
-#         profil.ville = request.POST['ville']
-#         profil.pays = request.POST['pays']
-#         profil.fonction = request.POST['fonction']
-#         profil.service = request.POST['service']
-#         profil.save()
-
-#         user_ob.username =request.POST['username']
-#         user_ob.last_name =request.POST['last_name']
-#         user_ob.first_name =request.POST['first_name']
-#         user_ob.email =request.POST['email']
-#         user_ob.save()
+        context = {
+        'questions': questions,
+        'count_q': count_q,
+        'count_a': count_a,
+        'question_null': dernier_null_list,
+        'question_top': top_questions,
+        'tags' : tags,
+        }
+        return render(request , 'qa/index2.html' , context)
+    # return HttpResponse(template.render(context))
+    # return HttpResponse(template.render(context, request))
+    return render(request , 'qa/index2.html' , {})
 
 
 
-#         form = userProfile(instance=profil)
-#         formuser = userform(instance = user_ob)
-#         formimg = PhotoForm()
-#         id_img = profil.photo_profil.image
-#         context = {
-#             'nbQusetion': nbQusetion,
-#             'nbAnswer': nbAnswer ,
-#             'profil' : profil ,
-#             'mesQusetion':mesQusetion,
-#             'form':form,
-#             'formuser':formuser,
-#             'formimg':formimg ,
-#             'id_img':id_img,
-#         }
 
-#         return render(request,'qa/updateprofil.html', context)
+@login_required
+def updateq(request , question_id):
+    # template = loader.get_template('qa/add.html')
+    mySession(request)
+
+    question = Question.objects.get(pk=question_id)
+    count_q = Question.objects.count
+    count_a = Answer.objects.count
+    dernier_null_list = Question.objects.order_by('-pub_date').filter(answer__isnull=True)[:10]
+    tags = Tag.objects.all()
+    categories = Categorie.objects.all()
+
+    list_tags = question.tags.all()
+    form = QuestionForm(instance= question )
+    if request.user.is_anonymous == True:
+        return HttpResponseRedirect("/main/login/")
+        # return render(request, 'qa/login.html', locals())
+
+    if request.method == 'POST':
+        form = QuestionForm(request.POST or None)
+        q = form.save(commit=False)
+        question_text = q.question_text
+        question_title = request.POST['titre']
+        categorie = request.POST['categorie']
+        tags_text = request.POST['tags']
+        user_id = request.POST['user']
+        user_ob = User.objects.get(id=user_id)
+        user = Profil.objects.get(user=user_ob)
+
+        if question_text.strip() == '':
+            return render(request, 'qa/updateq.html', {'message': 'Empty'})
+
+        pub_date = datetime.datetime.now()
+        question.question_text = question_text
+        question.question_title = question_title
+        question.pub_date = pub_date
+        question.user_data = user
+        question.categorie = Categorie.objects.get(id = categorie)
+        question.save()
+
+        if '' != tags_text:
+            tags = tags_text.split(',')
+            for tag in tags:
+                if '' != tag:
+                    try:
+                        t = Tag.objects.get(slug=tag)
+                        question.tags.add(t)
+                    except Tag.DoesNotExist:
+                        t=Tag()
+                        t.slug = tag
+                        t.save()
+                        question.tags.add(t)
+
+        #send_mail('QA: Your Question has been Posted.', 'Thank you for posting the question, '+question_text+'. We will notify you once someone posts an answer.', 'admin@test.com', [request.user.email], fail_silently=False)
+
+        return HttpResponseRedirect('/q/'+question_id+'/')
+    # return HttpResponse(template.render(context))
+    # return render(request, 'qa/add.html', locals())
+    context = {
+        'question': question,
+        'count_q': count_q,
+        'count_a': count_a,
+        'question_null': dernier_null_list,
+        'categories':categories,
+        'list_tags':list_tags,
+        }
+    context['form'] = form
+    return render(request, 'qa/updateq.html', context)
+
+
+
+
+def profil(request):
+    # user_id = request.POST['user']
+    mySession(request)
+
+    user_id = request.user.id
+    user_ob = get_object_or_404(User, pk=user_id)
+    profil = Profil.objects.get(user=user_ob)
+    nbQusetion = profil.question_set.count
+    nbAnswer = profil.answer_set.count 
+    mesQusetion = profil.question_set.all()
+    form = userProfile(instance=profil)
+    formuser = userform(instance = user_ob)
+    formimg = PhotoForm()
+    # id_img = profil.photo_profil.image
+    context = {
+        'nbQusetion': nbQusetion,
+        'nbAnswer': nbAnswer ,
+        'profil' : profil ,
+        'mesQusetion':mesQusetion,
+        'form':form,
+        'formuser':formuser,
+        'formimg':formimg ,
+        # 'id_img':id_img,
+    }
+    return render(request,'qa/profil.html', context)
+
+def updateprofil(request):
+    mySession(request)
+
+    if request.method == 'POST':
+        user_id = request.POST['user']
+        # user_id = request.user.id
+        user_ob = User.objects.get(id=user_id)
+        profil = Profil.objects.get(user=user_ob)
+        nbQusetion = profil.question_set.count
+        nbAnswer = profil.answer_set.count 
+        mesQusetion = profil.question_set.all()
+
+        profil.website = request.POST['website']
+        profil.facebook = request.POST['facebook']
+        profil.youtube = request.POST['youtube']
+        profil.instagram = request.POST['instagram']
+        profil.linkedin = request.POST['linkedin']
+        profil.tel = request.POST['tel']
+        profil.ville = request.POST['ville']
+        profil.pays = request.POST['pays']
+        profil.fonction = request.POST['fonction']
+        profil.service = request.POST['service']
+        profil.save()
+
+        user_ob.username =request.POST['username']
+        user_ob.last_name =request.POST['last_name']
+        user_ob.first_name =request.POST['first_name']
+        user_ob.email =request.POST['email']
+        user_ob.save()
+
+
+
+        form = userProfile(instance=profil)
+        formuser = userform(instance = user_ob)
+        formimg = PhotoForm()
+        # id_img = profil.photo_profil.image
+        context = {
+            'nbQusetion': nbQusetion,
+            'nbAnswer': nbAnswer ,
+            'profil' : profil ,
+            'mesQusetion':mesQusetion,
+            'form':form,
+            'formuser':formuser,
+            'formimg':formimg ,
+            # 'id_img':id_img,
+        }
+
+        return render(request,'qa/profil.html', context)
         
-#     return redirect('qa:profil')
+    return redirect('qa:profil')
 
+
+def changeimage(request):
+    mySession(request)
+
+    if request.method == 'POST':
+        img = Image()
+        formimg = PhotoForm(request.POST)
+        img.image = formimg.image
+        img.save()
+        user_id = request.POST['user']
+        # user_id = request.user.id
+        user_ob = User.objects.get(id=user_id)
+        profil = Profil.objects.get(user=user_ob)
+        profil.photo_profil = img 
+        return redirect('qa:profil')
+    return redirect('qa:profil')
+    
 
 # def index(request):
 

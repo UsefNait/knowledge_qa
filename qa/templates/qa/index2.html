@@ -40,90 +40,196 @@
 							<div class="panel-heading">
 								<!-- Tabs -->
 								<ul class="nav panel-tabs">
-									<li> <a data-toggle="tab" href="#tab1"><i class="icofont icon-ribbon"></i><span class="hidden-xs">Recent Questions</span></a> 
+									<li class="active"> <a data-toggle="tab" href="#tab1"><i class="icofont icon-ribbon"></i><span class="hidden-xs">Recent Questions</span></a> 
 									</li>
-									<li> <a data-toggle="tab" href="#tab2"><i class="icofont icon-layers"></i><span class="hidden-xs">Popular Responses</span></a> 
+									<li> <a data-toggle="tab" href="#tab2"><i class="icofont icon-layers"></i><span class="hidden-xs">Popular Questions</span></a> 
 									</li>
-									<li class="active"> <a data-toggle="tab" href="#tab3"><i class="icofont icon-global"></i><span class="hidden-xs">Recently Answered</span></a> 
+									<li > <a data-toggle="tab" href="#tab3"><i class="icofont icon-global"></i><span class="hidden-xs">No answers</span></a> 
 									</li>
-									<li> <a data-toggle="tab" href="#tab4"><i class="icofont icon-linegraph"></i><span class="hidden-xs">No answers</span></a> 
+									<li> <a data-toggle="tab" href="#tab4"><i class="icofont icon-linegraph"></i><span class="hidden-xs">No answers...</span></a> 
 									</li>
 								</ul>
 							</div>
 						</div>
 						<div class="panel-body">
 							<div class="tab-content">
-								<div id="tab1" class="tab-pane active">
-									<!-- Question Listing -->
-									{% if questions %}
-									{% for question in questions %}
-									<div class="listing-grid">
-										<div class="row">
-											<div class="col-md-2 col-sm-2 col-xs-12 hidden-xs">
-												<a data-toggle="tooltip" data-placement="bottom" data-original-title="Martina Jaz" href="#">
-													{% if question.user_data.photo_profil.image.url %}
-														<img alt="" class="img-responsive center-block" src="{{ question.user_data.photo_profil.image.url }}">
-													{% else %}
-								                      <img class="img-sm"  src='{% static "qa/user.png" %}'>
-								                    {% endif %}
-												</a>
-											</div>
-											<div class="col-md-7 col-sm-8  col-xs-12">
-												<h3><a  href="/q/{{ question.id }}/"> {{ question.question_title|truncatechars_html:50 }}</a></h3>
-												<div class="listing-meta"> <span><i class="fa fa-clock-o" aria-hidden="true"></i>{{ question.pub_date}}</span>  <span><i class="fa fa fa-eye" aria-hidden="true"></i> {{ question.views }} Views</span> 
-												</div>
-											</div>
-											<div class="col-md-3 col-sm-2 col-xs-12">
-												<ul class="question-statistic">
-													<li > <a data-toggle="tooltip" data-placement="bottom" data-original-title="Answers"><span>{{ question.answer_set.count }}</span></a> 
-													</li>
-													<li> <a data-toggle="tooltip" data-placement="bottom" data-original-title="Votes"><span>{{ question.qvoter_set.count }}</span></a> 
-													</li>
-												</ul>
-											</div>
-											<div class="col-md-10 col-sm-10  col-xs-12">
-												<p>{{ question.question_text| safe }}</p>
-												<div class="pull-right tagcloud">
-													{% for tag in question.tags.all %}
-												 	<a href="/tag/{{ tag.slug|slugify }}/">{{ tag.slug }}</a>
-												 	{% endfor %}
-												</div>
-											</div>
+
+									<div id="tab1" class="tab-pane active">
+											<!-- Question Listing -->
+											{% if questions %}
+											{% for question in questions %}
+											<div class="listing-grid">
+												<div class="row">
+													<div class="col-md-2 col-sm-2 col-xs-12 hidden-xs">
+														<a data-toggle="tooltip" data-placement="bottom" data-original-title="Martina Jaz" href="#">
+															{% if question.user_data.photo_profil.image.url %}
+																<img alt="" class="img-responsive center-block" src="{{ question.user_data.photo_profil.image.url }}">
+															{% else %}
+										                      <img class="img-sm"  src='{% static "qa/user.png" %}'>
+										                    {% endif %}
+														</a>
+													</div>
+													<div class="col-md-7 col-sm-8  col-xs-12">
+														<h3><a  href="/q/{{ question.id }}/"> {{ question.question_title|truncatechars_html:50 }}</a></h3>
+														<div class="listing-meta"> <span><i class="fa fa-clock-o" aria-hidden="true"></i>{{ question.pub_date}}</span>  <span><i class="fa fa fa-eye" aria-hidden="true"></i> {{ question.views }} Views</span> 
+														</div>
+													</div>
+													<div class="col-md-3 col-sm-2 col-xs-12">
+														<ul class="question-statistic">
+															<li > <a data-toggle="tooltip" data-placement="bottom" data-original-title="Answers"><span>{{ question.answer_set.count }}</span></a> 
+															</li>
+															<li> <a data-toggle="tooltip" data-placement="bottom" data-original-title="Votes"><span>{{ question.qvoter_set.count }}</span></a> 
+															</li>
+														</ul>
+													</div>
+													<div class="col-md-10 col-sm-10  col-xs-12">
+														<p>{{ question.question_text| safe }}</p>
+														<div class="pull-right tagcloud">
+															{% for tag in question.tags.all %}
+														 	<a href="/tag/{{ tag.slug|slugify }}/">{{ tag.slug }}</a>
+														 	{% endfor %}
+														</div>
+													</div>
 
 
+												</div>
+
+
+											</div>
+											{% endfor %}
+											{% endif %}
+											<!-- Question Listing End -->
+
+
+											<!-- Pagination View More -->
+										<div class="text-center clearfix">
+											<!-- <button class="btn btn-primary btn-lg">View All Question</button> -->
+											<div class="pagination center-block">
+											          <span class="step-links">
+											           <div class="clearfix"></div>
+											            <nav aria-label="">
+											              <ul class="pager">
+											                {% if questions.has_previous %}
+											                    <li><a href="?page={{ questions.previous_page_number }}">Précédent</a></li>
+											                {% endif %}
+
+											                 <span class="current">
+											                   {{ questions.number }} / {{ questions.paginator.num_pages }}
+											                </span>
+
+											                {% if questions.has_next %}
+											                    <li><a href="?page={{ questions.next_page_number }}">Suivant</a></li>
+											                {% endif %}
+											              </ul>
+											            </nav>
+											          </span>
+											</div>
 										</div>
-
-
+										<!-- Pagination View More End -->
 									</div>
-									{% endfor %}
-									{% endif %}
-									<!-- Question Listing End -->
-								</div>
-								<!-- Pagination View More -->
-								<div class="text-center clearfix">
-									<!-- <button class="btn btn-primary btn-lg">View All Question</button> -->
-									<div class="pagination center-block">
-									          <span class="step-links">
-									           <div class="clearfix"></div>
-									            <nav aria-label="">
-									              <ul class="pager">
-									                {% if questions.has_previous %}
-									                    <li><a href="?page={{ questions.previous_page_number }}">Précédent</a></li>
-									                {% endif %}
+										
 
-									                 <span class="current">
-									                   {{ questions.number }} / {{ questions.paginator.num_pages }}
-									                </span>
 
-									                {% if questions.has_next %}
-									                    <li><a href="?page={{ questions.next_page_number }}">Suivant</a></li>
-									                {% endif %}
-									              </ul>
-									            </nav>
-									          </span>
+										<!-- ****************************** tab 2 **************** -->
+
+
+									<div id="tab2" class="tab-pane">
+											<!-- Question Listing -->
+											{% if question_top %}
+											{% for question in question_top %}
+											<div class="listing-grid">
+												<div class="row">
+													<div class="col-md-2 col-sm-2 col-xs-12 hidden-xs">
+														<a data-toggle="tooltip" data-placement="bottom" data-original-title="Martina Jaz" href="#">
+															{% if question.user_data.photo_profil.image.url %}
+																<img alt="" class="img-responsive center-block" src="{{ question.user_data.photo_profil.image.url }}">
+															{% else %}
+										                      <img class="img-sm"  src='{% static "qa/user.png" %}'>
+										                    {% endif %}
+														</a>
+													</div>
+													<div class="col-md-7 col-sm-8  col-xs-12">
+														<h3><a  href="/q/{{ question.id }}/"> {{ question.question_title|truncatechars_html:50 }}</a></h3>
+														<div class="listing-meta"> <span><i class="fa fa-clock-o" aria-hidden="true"></i>{{ question.pub_date}}</span>  <span><i class="fa fa fa-eye" aria-hidden="true"></i> {{ question.views }} Views</span> 
+														</div>
+													</div>
+													<div class="col-md-3 col-sm-2 col-xs-12">
+														<ul class="question-statistic">
+															<li > <a data-toggle="tooltip" data-placement="bottom" data-original-title="Answers"><span>{{ question.answer_set.count }}</span></a> 
+															</li>
+															<li> <a data-toggle="tooltip" data-placement="bottom" data-original-title="Votes"><span>{{ question.qvoter_set.count }}</span></a> 
+															</li>
+														</ul>
+													</div>
+													<div class="col-md-10 col-sm-10  col-xs-12">
+														<p>{{ question.question_text| safe }}</p>
+														<div class="pull-right tagcloud">
+															{% for tag in question.tags.all %}
+														 	<a href="/tag/{{ tag.slug|slugify }}/">{{ tag.slug }}</a>
+														 	{% endfor %}
+														</div>
+													</div>
+
+
+												</div>
+
+
+											</div>
+											{% endfor %}
+											{% endif %}
+											<!-- Question Listing End -->
 									</div>
-								</div>
-								<!-- Pagination View More End -->
+									<!-- ****************************** end tab 2 **************** -->
+
+
+									<!-- ****************************** tab 3 **************** -->
+									<div id="tab3" class="tab-pane">
+											<!-- Question Listing -->
+											{% if question_null %}
+											{% for question in question_null %}
+											<div class="listing-grid">
+												<div class="row">
+													<div class="col-md-2 col-sm-2 col-xs-12 hidden-xs">
+														<a data-toggle="tooltip" data-placement="bottom" data-original-title="Martina Jaz" href="#">
+															{% if question.user_data.photo_profil.image.url %}
+																<img alt="" class="img-responsive center-block" src="{{ question.user_data.photo_profil.image.url }}">
+															{% else %}
+										                      <img class="img-sm"  src='{% static "qa/user.png" %}'>
+										                    {% endif %}
+														</a>
+													</div>
+													<div class="col-md-7 col-sm-8  col-xs-12">
+														<h3><a  href="/q/{{ question.id }}/"> {{ question.question_title|truncatechars_html:50 }}</a></h3>
+														<div class="listing-meta"> <span><i class="fa fa-clock-o" aria-hidden="true"></i>{{ question.pub_date}}</span>  <span><i class="fa fa fa-eye" aria-hidden="true"></i> {{ question.views }} Views</span> 
+														</div>
+													</div>
+													<div class="col-md-3 col-sm-2 col-xs-12">
+														<ul class="question-statistic">
+															<li > <a data-toggle="tooltip" data-placement="bottom" data-original-title="Answers"><span>{{ question.answer_set.count }}</span></a> 
+															</li>
+															<li> <a data-toggle="tooltip" data-placement="bottom" data-original-title="Votes"><span>{{ question.qvoter_set.count }}</span></a> 
+															</li>
+														</ul>
+													</div>
+													<div class="col-md-10 col-sm-10  col-xs-12">
+														<p>{{ question.question_text| safe }}</p>
+														<div class="pull-right tagcloud">
+															{% for tag in question.tags.all %}
+														 	<a href="/tag/{{ tag.slug|slugify }}/">{{ tag.slug }}</a>
+														 	{% endfor %}
+														</div>
+													</div>
+
+
+												</div>
+
+
+											</div>
+											{% endfor %}
+											{% endif %}
+											<!-- Question Listing End -->
+									</div>
+									<!-- ****************************** end tab 3 **************** -->	
 							</div>
 						</div>
 					</div>
@@ -140,8 +246,8 @@
 				                <div class="recent-comments">
 				                  <hr class="widget-separator no-margin">
 				                  <div style="padding: 15px; ">	
-				                  	<h4>Total Questions : {{ count_q }}</h4>
-				                  	<h4>Total Questions : {{ count_a }}</h4>
+				                  	<h4>Total Questions : {{ request.session.count_q }}</h4>
+				                  	<h4>Total Questions : {{ request.session.count_a }}</h4>
 				                  </div>	
 				                </div>
 				              </div>
@@ -156,6 +262,9 @@
 				                  <div style="padding: 15px; ">	
 				                  	<a style="color:#FFFFFF;" class="label label-info" href="#"># material</a>
 				                  	<a class="label label-info" href="#">material</a>
+				                  	{% for t in request.session.tags %}
+				                  		<a class="label label-info" style="color:#FFFFFF;" href="#">{{ t.slug }}</a>
+				                  	{% endfor %}
 				                  </div>	
 				                </div>
 				              </div>
@@ -258,6 +367,8 @@
 			                  <h2>Recent Comments</h2>
 			                  <hr class="widget-separator no-margin">
 			                  <ul id="recentcomments">
+			                  		<li class="recentcomments"> <span class="comment-author-link">youssef</span> on <a href=""></a> </li>
+			                  	
 			                    <li class="recentcomments"> <span class="comment-author-link">John Doe</span> on <a href="">bootstrap vs foundation</a> </li>
 			                    <li class="recentcomments"> <span class="comment-author-link">Emily Copper</span> on <a href="">how to get data from URL in PHP</a> </li>
 			                    <li class="recentcomments"> <span class="comment-author-link">Alex Martin</span> on <a href="">My SQL PHP Multi Layer Drop Down List from Databse</a> </li>

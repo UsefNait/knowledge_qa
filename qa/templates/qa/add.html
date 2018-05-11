@@ -67,7 +67,7 @@
                   </select> -->
                   <select name="categorie" class="questions-category form-control chosen-container chosen-container-single">
                     <option value="0" disabled selected>select Categories</option>
-                    {% for cat in categories %}
+                    {% for cat in request.session.categories %}
                       <option value="{{ cat.id }}" >{{ cat.title_categorie }}</option>
                     {% endfor %}
                   </select>
