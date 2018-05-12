@@ -88,7 +88,7 @@
                       <button class="btncomt pull-right" > <li class="glyphicon glyphicon-edit" ></li> update</button>
                     </form>
                   {% endif %}
-                  <div class="listing-meta"> <span><i class="fa fa-clock-o" aria-hidden="true"></i>{{ question.pub_date }}</span> <span><i class="fa fa fa-eye" aria-hidden="true"></i> 750 Views</span> </div>
+                  <div class="listing-meta"> <span><i class="fa fa-clock-o" aria-hidden="true"></i>{{ question.pub_date }}</span> <span><i class="fa fa fa-eye" aria-hidden="true"></i> {{ question.views }} Views</span> </div>
                 </div>
                 <div class="col-md-12 col-sm-12 col-xs-12">
                   <p> 
@@ -118,7 +118,7 @@
 
             <div class="clearfix"></div>
             <!-- Thread Reply -->
-            <h2>Reponses </h2>
+            <h2>{{ question.answer_set.count }} Reponses </h2>
             <br>
             {% if user.is_authenticated %}
             {% if answers %}
@@ -134,7 +134,7 @@
                     {% if answer.user_data.photo_profil.image.url %}
                       <img class="img-sm" alt="Profile Picture" src="{{ answer.user_data.photo_profil.image.url }}">
                     {% else %}
-                      <img class="img-sm"  src='{% static "qa/user.png" %}'>
+                      <img class="img-sm"  src='{% static "images/p1.png" %}'>
                     {% endif %}
                   </a>
 
@@ -158,7 +158,7 @@
                   </p>
 
                   <div class="pad-ver pull-left">
-                    <button id="btn" onclick="myFunction({{ answer.id }})" class="btn btn-info btn-sm"><i class="glyphicon glyphicon-comment"></i></button>
+                    <button id="btn" onclick="myFunction({{ answer.id }})" class="btn btn-info btn-sm">{{ answer.comment_set.count }} - <i class="glyphicon glyphicon-comment"></i></button>
                   </div>
                   <div class="pad-ver pull-right">
 
@@ -251,6 +251,7 @@ function myFunction(a_id) {
 
             {% endif %}
 
+            {% if user.is_authenticated %}
              <form method="post" action="/answer/">
                  {% csrf_token %}
                 <div class="form-group">
@@ -265,6 +266,7 @@ function myFunction(a_id) {
                 <button class="btn btn-primary btn-lg btn-block">Post Your Answer</button>
 
               </form>
+             {% endif %} 
             <!-- Thread Reply End -->
           </div>
 
@@ -275,7 +277,14 @@ function myFunction(a_id) {
             <div class="side-bar">
               <div class="widget">
                 <div class="widget-image widget-image-sm"> <img alt="image" src='{% static "images/light-background.jpg" %}'>
-                  <div class="widget-image-content text-center"> <img class="img-thumbnail" alt="avatar" src="{{ question.user_data.photo_profil.image.url }}">
+                  <div class="widget-image-content text-center"> 
+                    
+                    {% if question.user_data.photo_profil.image.url %}
+                         <img class="img-thumbnail" alt="avatar" src="{{ question.user_data.photo_profil.image.url }}">
+                    {% else %}
+                           <img class="img-thumbnail" alt="avatar" src='{% static "images/p1.png" %}'>              
+                    {% endif %}
+
                     <h2 class="widget-heading text-light"><strong><a style="color: #ffffff;">{{ question.user_data.user.username }}</a></strong></h2>
                     {% if question.user_data.fonction %}
                     <h4 class="widget-heading text-light-op"><em>{{ question.user_data.fonction }}</em></h4>
@@ -305,47 +314,7 @@ function myFunction(a_id) {
                 </div>
               </div>
 
-              <!-- widget -->
-              <div class="widget">
-                <div class="recent-comments">
-                  <h2>Hot Questions</h2>
-                  <hr class="widget-separator no-margin">
-                  <ul>
-                    <li><a href="#">Twitter Bootsrap 3.0 - tabs-left not working anymore?</a>
-                    </li>
-                    <li><a href="#">Changing the color on my tabbed left bootstrap3 tabs</a>
-                    </li>
-                    <li><a href="#">How to create tabs on the left in bootstrap.js v3.0.0? </a>
-                    </li>
-                    <li><a href="#">Bootstrap horizontal form with left floated side tabs</a>
-                    </li>
-                    <li><a href="#">A Repository class - would you use it to handle multi records? </a>
-                    </li>
-                    <li><a href="#">Realurl generating unwanted language codes inside url </a>
-                    </li>
-                    <li><a href="#">post data from html form to php script and return result to ajax/js/jquery </a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <!-- widget -->
-
-              <!-- widget -->
-              <div class="widget">
-                <div class="recent-comments">
-                  <h2>Recent Comments</h2>
-                  <hr class="widget-separator no-margin">
-                  <ul id="recentcomments">
-                    <li class="recentcomments"> <span class="comment-author-link">John Doe</span> on <a href="#">bootstrap vs foundation</a> </li>
-                    <li class="recentcomments"> <span class="comment-author-link">Emily Copper</span> on <a href="#">how to get data from URL in PHP</a> </li>
-                    <li class="recentcomments"> <span class="comment-author-link">Alex Martin</span> on <a href="#">My SQL PHP Multi Layer Drop Down List from Databse</a> </li>
-                    <li class="recentcomments"> <span class="comment-author-link">Tina Martin</span> on <a href="#">PHP Multi Layer Drop Down List from Databse</a> </li>
-                    <li class="recentcomments"> <span class="comment-author-link">Alex Henz</span> on <a href="#">Can't use custom width with Angular-Slick</a> </li>
-                    <li class="recentcomments"> <span class="comment-author-link">Coty Embry</span> on <a href="#">Use Digital Ocean to create node.js server or creating website on Wordpress?</a> </li>
-                  </ul>
-                </div>
-              </div>
-              <!-- widget end -->
+              {% include 'qa/right_sidebar.html' %}
 
             </div>
             <!-- sidebar end -->

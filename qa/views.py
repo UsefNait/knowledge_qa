@@ -19,22 +19,22 @@ def mySession(request):
         # ***************** session ***********************
     count_q = Question.objects.count()
     count_a = Answer.objects.count()    
-    if 'count_q' not in request.session:
-        request.session["count_q"] = count_q
-    if 'count_a' not in request.session:
-        request.session["count_a"] = count_a
+    # if 'count_q' not in request.session:
+    request.session["count_q"] = count_q
+    # if 'count_a' not in request.session:
+    request.session["count_a"] = count_a
    
-    if 'top_questions' not in request.session:
-        request.session['top_questions']= list(Question.objects.order_by('-views').filter(reward__gte=1)[:5].values("id","categorie","closed","user_data","views","reward","tags","question_title","question_text"))
+    # if 'top_questions' not in request.session:
+    request.session['top_questions']= list(Question.objects.order_by('-views','reward')[:5].values("id","categorie","closed","user_data","views","reward","tags","question_title","question_text"))
    
-    if 'dernier_null_list' not in request.session:
-        request.session['dernier_null_list']= list(Question.objects.order_by('-pub_date').filter(answer__isnull=True)[:5].values("id","categorie","closed","user_data","views","reward","tags","question_title","question_text"))
+    # if 'dernier_null_list' not in request.session:
+    request.session['dernier_null_list']= list(Question.objects.order_by('-pub_date').filter(answer__isnull=True)[:5].values("id","categorie","closed","user_data","views","reward","tags","question_title","question_text"))
    
-    if 'categories' not in request.session:
-        request.session['categories']= list(Categorie.objects.all().values("id","title_categorie"))
+    # if 'categories' not in request.session:
+    request.session['categories']= list(Categorie.objects.all().values("id","title_categorie"))
     
-    if 'tags' not in request.session:    
-        request.session['tags']= list(Tag.objects.all().values("id","slug"))
+    # if 'tags' not in request.session:    
+    request.session['tags']= list(Tag.objects.all().values("id","slug"))
 
     if request.user.is_anonymous == False:
         user_id = request.user.id
@@ -465,9 +465,10 @@ def comment(request, answer_id):
 
         except Question.DoesNotExist:
             raise Http404("Question does not exist")
-        return render(request, 'qa/detail.html', {'answers': answers, 'question': question}, )
+        form_a = AnswerForm(None)    
+        return render(request, 'qa/detail.html', {'answers': answers, 'question': question ,'form_a':form_a,} )
 
-    template = loader.get_template('qa/comment.html')
+    template = loader.get_template('qa/detail.html')
     context = {'answer_id': answer_id}
     # return HttpResponse(template.render(context))
     return HttpResponse(template.render(context, request))
@@ -596,11 +597,23 @@ def profil(request):
     profil = Profil.objects.get(user=user_ob)
     nbQusetion = profil.question_set.count
     nbAnswer = profil.answer_set.count 
-    mesQusetion = profil.question_set.all()
+    questions = profil.question_set.all()
     form = userProfile(instance=profil)
     formuser = userform(instance = user_ob)
     formimg = PhotoForm()
     # id_img = profil.photo_profil.image
+    paginator = Paginator(questions, 10)
+    page = request.GET.get('page')
+    try:
+        mesQusetion = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        mesQusetion = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        mesQusetion = paginator.page(paginator.num_pages)
+
+
     context = {
         'nbQusetion': nbQusetion,
         'nbAnswer': nbAnswer ,
@@ -681,6 +694,61 @@ def changeimage(request):
         return redirect('qa:profil')
     return redirect('qa:profil')
     
+
+
+
+def tag(request, tag):
+    word = tag
+    latest_question_list = Question.objects.filter(tags__slug__contains=word)
+    paginator = Paginator(latest_question_list, 10)
+    page = request.GET.get('page')
+    try:
+        questions = paginator.page(page)
+    except PageNotAnInteger:
+    # If page is not an integer, deliver first page.
+        questions = paginator.page(1)
+    except EmptyPage:
+    # If page is out of range (e.g. 9999), deliver last page of results.
+        questions = paginator.page(paginator.num_pages)
+
+    latest_noans_list = Question.objects.order_by('-pub_date').filter(tags__slug__contains=word,answer__isnull=True)[:10]
+    top_questions = Question.objects.order_by('-reward').filter(tags__slug__contains=word,answer__isnull=True,reward__gte=1)[:10]
+    count = Question.objects.count
+    count_a = Answer.objects.count
+
+    template = loader.get_template('qa/index2.html')
+    context = {
+    'questions': questions,
+    'totalcount': count,
+    'anscount': count_a,
+    'noans': latest_noans_list,
+    'reward': top_questions,
+    }
+    # return HttpResponse(template.render(context))
+    return render(request, 'qa/index2.html' , context)
+
+
+
+def closequestion(request):
+    if request.method == 'POST':
+        action = request.POST['closequestion']
+        question_id = request.POST['question_id']
+        question = Question.objects.get(pk=question_id)
+        question.closed = action
+        question.save()
+
+        context = {
+            'question':question,
+            'close':question.closed
+        }
+    return redirect('qa:profil')    
+    return render(request, 'qa/profil.html', context)  
+
+
+
+
+
+
 
 # def index(request):
 

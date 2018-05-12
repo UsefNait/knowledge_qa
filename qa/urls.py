@@ -19,9 +19,9 @@ urlpatterns = [
     re_path(r'^thumb/(?P<user_id>\d+)/(?P<question_id>\d+)/(?P<op_code>\d+)/$', views.thumb, name='thumb'),
     re_path(r'^updateq/(?P<question_id>\d+)/$', views.updateq, name='updateq'),
     re_path(r'^profil/$', views.profil, name='profil'),
- #    re_path(r'^closequestion/$', views.closequestion, name='closequestion'),
+    re_path(r'^closequestion/$', views.closequestion, name='closequestion'),
     re_path(r'^updateprofil/$', views.updateprofil, name='updateprofil'),
- #    re_path(r'^tag/(?P<tag>\w+)/$', views.tag, name='tag'),
+    re_path(r'^tag/(?P<tag>\w+)/$', views.tag, name='tag'),
  #    re_path(r'^categorie/$', views.categorie, name='categorie'),
  	re_path(r'^change_img/$', views.changeimage, name='changeimage'),
     

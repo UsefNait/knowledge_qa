@@ -8,10 +8,12 @@
 		<div class="search-area container">
 			<h3 class="search-title">Have a Question?</h3>
 			<p class="search-tag-line">If you have any question you can ask below or enter what you are looking for!</p>
-			<form autocomplete="off" method="get" class="search-form clearfix" id="search-form">
-				<input type="text" title="* Please enter a search term!" placeholder="Type your search terms here" class="search-term " autocomplete="off">
+			<form autocomplete="off" method="Post" action="/search/" class="search-form clearfix" id="search-form">
+				{% csrf_token %}
+				<input name="query" type="text" title="* Please enter a search term!" placeholder="Type your search terms here" class="search-term " autocomplete="off">
 				<input type="submit" value="Search" class="search-btn">
 			</form>
+
 		</div>
 	</div>
 	<!-- =-=-=-=-=-=-= HOME END =-=-=-=-=-=-= -->
@@ -42,9 +44,9 @@
 								<ul class="nav panel-tabs">
 									<li class="active"> <a data-toggle="tab" href="#tab1"><i class="icofont icon-ribbon"></i><span class="hidden-xs">Recent Questions</span></a> 
 									</li>
-									<li> <a data-toggle="tab" href="#tab2"><i class="icofont icon-layers"></i><span class="hidden-xs">Popular Questions</span></a> 
+									<li> <a data-toggle="tab" href="#tab2"><i class="icofont icon-global"></i><span class="hidden-xs">Popular Questions</span></a> 
 									</li>
-									<li > <a data-toggle="tab" href="#tab3"><i class="icofont icon-global"></i><span class="hidden-xs">No answers</span></a> 
+									<li > <a data-toggle="tab" href="#tab3"><i class="icofont icon-layers"></i><span class="hidden-xs">Questions -No answers</span></a> 
 									</li>
 									<li> <a data-toggle="tab" href="#tab4"><i class="icofont icon-linegraph"></i><span class="hidden-xs">No answers...</span></a> 
 									</li>
@@ -65,7 +67,7 @@
 															{% if question.user_data.photo_profil.image.url %}
 																<img alt="" class="img-responsive center-block" src="{{ question.user_data.photo_profil.image.url }}">
 															{% else %}
-										                      <img class="img-sm"  src='{% static "qa/user.png" %}'>
+										                      <img class="img-sm"  src='{% static "images/p1.png" %}'>
 										                    {% endif %}
 														</a>
 													</div>
@@ -76,9 +78,9 @@
 													</div>
 													<div class="col-md-3 col-sm-2 col-xs-12">
 														<ul class="question-statistic">
-															<li > <a data-toggle="tooltip" data-placement="bottom" data-original-title="Answers"><span>{{ question.answer_set.count }}</span></a> 
+															<li > <a data-toggle="tooltip" data-placement="bottom" title="Answers"><span>{{ question.answer_set.count }}</span></a> 
 															</li>
-															<li> <a data-toggle="tooltip" data-placement="bottom" data-original-title="Votes"><span>{{ question.qvoter_set.count }}</span></a> 
+															<li> <a data-toggle="tooltip" data-placement="bottom" title="Votes"><span>{{ question.qvoter_set.count }}</span></a> 
 															</li>
 														</ul>
 													</div>
@@ -237,152 +239,11 @@
 					<!-- ************************** -->
 
 					<!-- Right Sidebar -->
-					<div class="col-md-3 col-sm-12 col-xs-12 clearfix pull-right">
-
-			            <!-- sidebar -->
-			            <div class="side-bar">
-			            	<!-- widget -->
-				              <div class="widget">
-				                <div class="recent-comments">
-				                  <hr class="widget-separator no-margin">
-				                  <div style="padding: 15px; ">	
-				                  	<h4>Total Questions : {{ request.session.count_q }}</h4>
-				                  	<h4>Total Questions : {{ request.session.count_a }}</h4>
-				                  </div>	
-				                </div>
-				              </div>
-				              <!-- widget end -->
-
-
-			            	<!-- widget -->
-				              <div class="widget">
-				                <div class="recent-comments">
-				                  <h2>Recent Comments</h2>
-				                  <hr class="widget-separator no-margin">
-				                  <div style="padding: 15px; ">	
-				                  	<a style="color:#FFFFFF;" class="label label-info" href="#"># material</a>
-				                  	<a class="label label-info" href="#">material</a>
-				                  	{% for t in request.session.tags %}
-				                  		<a class="label label-info" style="color:#FFFFFF;" href="#">{{ t.slug }}</a>
-				                  	{% endfor %}
-				                  </div>	
-				                </div>
-				              </div>
-				              <!-- widget end -->
-
-			              <!-- widget -->
-			              <div class="widget">
-			                <h2>Top Authors</h2>
-			                <hr class="widget-separator no-margin">
-			                <div class="media-group">
-			                  <div class="media-group-item">
-			                    <div class="media">
-			                      <div class="media-left">
-			                        <div class="avatar avatar-md avatar-circle"> <img alt="" class="" src="images/authors/1.jpg"> </div>
-			                      </div>
-			                      <div class="media-body">
-			                        <h5 class="media-heading"><a href="profile.html">John Doe</a></h5>
-			                        <small class="media-meta">Software Engineer</small>
-			                        <div class="points"><span>Points : </span>9958</div>
-			                      </div>
-			                    </div>
-			                  </div>
-			                  <!-- .media-group-item -->
-
-			                  <div class="media-group-item">
-			                    <div class="media">
-			                      <div class="media-left">
-			                        <div class="avatar avatar-md avatar-circle"> <img alt="" class="" src="images/authors/2.jpg"> </div>
-			                      </div>
-			                      <div class="media-body">
-			                        <h5 class="media-heading"><a href="profile.html">Adam Khaury</a></h5>
-			                        <small class="media-meta">Web Designer</small>
-			                        <div class="points"><span>Points : </span>7910</div>
-			                      </div>
-			                    </div>
-			                  </div>
-			                  <!-- .media-group-item -->
-
-			                  <div class="media-group-item">
-			                    <div class="media">
-			                      <div class="media-left">
-			                        <div class="avatar avatar-md avatar-circle"> <img alt="" class="" src="images/authors/3.jpg"> </div>
-			                      </div>
-			                      <div class="media-body">
-			                        <h5 class="media-heading"><a href="profile.html">John Doe</a></h5>
-			                        <small class="media-meta">Web Developer</small>
-			                        <div class="points"><span>Points : </span>7458</div>
-			                      </div>
-			                    </div>
-			                  </div>
-			                  <!-- .media-group-item -->
-
-			                  <div class="media-group-item">
-			                    <div class="media">
-			                      <div class="media-left">
-			                        <div class="avatar avatar-md avatar-circle"> <img alt="" class="" src="images/authors/4.jpg"> </div>
-			                      </div>
-			                      <div class="media-body">
-			                        <h5 class="media-heading"><a href="profile.html">Sara Smith</a></h5>
-			                        <small class="media-meta">UI/UX Designer</small>
-			                        <div class="points"><span>Points : </span>6458</div>
-			                      </div>
-			                    </div>
-			                  </div>
-			                  <!-- .media-group-item -->
-			
-			                  <div class="media-group-item">
-			                    <div class="media">
-			                      <div class="media-left">
-			                        <div class="avatar avatar-md avatar-circle"> <img alt="" class="" src="images/authors/7.jpg"> </div>
-			                      </div>
-			                      <div class="media-body">
-			                        <h5 class="media-heading"><a href="profile.html">Sally Sally</a></h5>
-			                        <small class="media-meta">Teacher Assistant</small>
-			                        <div class="points"><span>Points : </span>5558</div>
-			                      </div>
-			                    </div>
-			                  </div>
-			                  <!-- .media-group-item -->
-			                  <div class="media-group-item">
-			                    <div class="media">
-			                      <div class="media-left">
-			                        <div class="avatar avatar-md avatar-circle"> <img alt="" class="" src="images/authors/8.jpg"> </div>
-			                      </div>
-			                      <div class="media-body">
-			                        <h5 class="media-heading"><a href="profile.html">Sally Sally</a></h5>
-			                        <small class="media-meta">Teacher Assistant</small>
-			                        <div class="points"><span>Points : </span>5558</div>
-			                      </div>
-			                    </div>
-			                  </div>
-			                  <!-- .media-group-item -->
-			                </div>
-			              </div>
-			              <!-- widget end -->
-
-			              <!-- widget -->
-			              <div class="widget">
-			                <div class="recent-comments">
-			                  <h2>Recent Comments</h2>
-			                  <hr class="widget-separator no-margin">
-			                  <ul id="recentcomments">
-			                  		<li class="recentcomments"> <span class="comment-author-link">youssef</span> on <a href=""></a> </li>
-			                  	
-			                    <li class="recentcomments"> <span class="comment-author-link">John Doe</span> on <a href="">bootstrap vs foundation</a> </li>
-			                    <li class="recentcomments"> <span class="comment-author-link">Emily Copper</span> on <a href="">how to get data from URL in PHP</a> </li>
-			                    <li class="recentcomments"> <span class="comment-author-link">Alex Martin</span> on <a href="">My SQL PHP Multi Layer Drop Down List from Databse</a> </li>
-			                    <li class="recentcomments"> <span class="comment-author-link">Tina Martin</span> on <a href="">PHP Multi Layer Drop Down List from Databse</a> </li>
-			                    <li class="recentcomments"> <span class="comment-author-link">Alex Henz</span> on <a href="">Can't use custom width with Angular-Slick</a> </li>
-			                    <li class="recentcomments"> <span class="comment-author-link">Coty Embry</span> on <a href="">Use Digital Ocean to create node.js server or creating website on Wordpress?</a> </li>
-			                  </ul>
-			                </div>
-			              </div>
-			              <!-- widget end -->
-
-			            </div>
-			            <!-- sidebar end -->
-			          </div>
+					<div class="col-md-4 col-sm-12 col-xs-12 clearfix pull-right">
+						   <div class="side-bar">
+					{% include 'qa/right_sidebar.html' %}
+							</div>
+					      </div>
 					<!-- Right Sidebar End -->
 
 					<div class="clearfix"></div>
