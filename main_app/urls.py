@@ -11,7 +11,7 @@ urlpatterns = [
 
     re_path(r'^signup', views.signup, name='signup'),
     path('confirm_email/<int:id_user>/<str:token_email>', views.confirm_email_signup, name='confirm_email_signup'),#traitement pour confirmer un email via le lien envoyé par mail
-    path('login', views.log_in, name='log_in'),
+    re_path(r'^login', views.log_in, name='log_in'),
     path('logout', views.log_out, name='log_out'),
     path('confirm_mail/resend', views.confirm_mail_resend, name='confirm_mail_resend'),# renvoyer un autre mail de confirmation
     path('contactus', views.contactus, name='contactus'),

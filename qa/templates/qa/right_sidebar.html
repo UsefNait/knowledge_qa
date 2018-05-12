@@ -8,38 +8,54 @@
 				                <div class="recent-comments">
 				                  <hr class="widget-separator no-margin">
 				                  <div style="padding: 15px; ">	
-				                  	<h4>Total Questions : {{ request.session.count_q }}</h4>
-				                  	<h4>Total Questions : {{ request.session.count_a }}</h4>
+				                  	<h4>Total Questions : {{ count_q }}</h4>
+				                  	<h4>Total Answers : {{ count_a }}</h4>
 				                  </div>	
 				                </div>
 				              </div>
 				              <!-- widget end -->
 
-
-			            	<!-- widget -->
+				          <!-- widget -->
 				              <div class="widget">
 				                <div class="recent-comments">
-				                  <h2>Recent Comments</h2>
+				                  <h2>Recent Tags</h2>
 				                  <hr class="widget-separator no-margin">
 				                  <div style="padding: 15px; ">	
 				                  	<a style="color:#FFFFFF;" class="label label-info" href="#"># material</a>
 				                  	<a class="label label-info" href="#">material</a>
-				                  	{% for t in request.session.tags %}
+				                  	{% for t in tags %}
 				                  		<a class="label label-info" style="color:#FFFFFF;" href="/tag/{{ t.slug|slugify }}/">{{ t.slug }}</a>
 				                  	{% endfor %}
 				                  </div>	
 				                </div>
 				              </div>
 				              <!-- widget end -->
+				              
 
-				          
+
 				          <!-- widget -->
 				          <div class="widget">
 			                <div class="recent-comments">
 			                  <h2>Hot Questions</h2>
 			                  <hr class="widget-separator no-margin">
 			                  <ul>
-			                  	{% for top_question in request.session.top_questions %}
+			                  	{% for top_question in top_questions %}
+			                    <li><a href="/q/{{ top_question.id }}/">{{ top_question.question_title }}</a>
+			                    {% endfor %}	
+			                    </li>
+			                  </ul>
+			                </div>
+			              </div>
+				          <!-- widget end -->
+
+
+				          <!-- widget -->
+				          <div class="widget">
+			                <div class="recent-comments">
+			                  <h2>Hot Questions</h2>
+			                  <hr class="widget-separator no-margin">
+			                  <ul>
+			                  	{% for top_question in top_questions %}
 			                    <li><a href="/q/{{ top_question.id }}/">{{ top_question.question_title }}</a>
 			                    {% endfor %}	
 			                    </li>
@@ -53,7 +69,7 @@
 			                <h2>Recent Questions</h2>
 			                <hr class="widget-separator no-margin">
 			                <ul>
-			                  	{% for last_question in question_null %}
+			                  	{% for last_question in dernier_null_list %}
 			                    <li><a href="/q/{{ last_question.id }}/">{{ last_question.question_title }}</a>
 			                    {% endfor %}	
 			                    </li>

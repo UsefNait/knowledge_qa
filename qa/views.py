@@ -17,24 +17,24 @@ from django.db.models import Q
 
 def mySession(request):
         # ***************** session ***********************
-    count_q = Question.objects.count()
-    count_a = Answer.objects.count()    
-    # if 'count_q' not in request.session:
-    request.session["count_q"] = count_q
-    # if 'count_a' not in request.session:
-    request.session["count_a"] = count_a
+    # count_q = Question.objects.count()
+    # count_a = Answer.objects.count()    
+    # # if 'count_q' not in request.session:
+    # request.session["count_q"] = count_q
+    # # if 'count_a' not in request.session:
+    # request.session["count_a"] = count_a
    
-    # if 'top_questions' not in request.session:
-    request.session['top_questions']= list(Question.objects.order_by('-views','reward')[:5].values("id","categorie","closed","user_data","views","reward","tags","question_title","question_text"))
+    # # if 'top_questions' not in request.session:
+    # request.session['top_questions']= list(Question.objects.order_by('-views','reward')[:5].values("id","categorie","closed","user_data","views","reward","tags","question_title","question_text"))
    
-    # if 'dernier_null_list' not in request.session:
-    request.session['dernier_null_list']= list(Question.objects.order_by('-pub_date').filter(answer__isnull=True)[:5].values("id","categorie","closed","user_data","views","reward","tags","question_title","question_text"))
+    # # if 'dernier_null_list' not in request.session:
+    # request.session['dernier_null_list']= list(Question.objects.order_by('-pub_date').filter(answer__isnull=True)[:5].values("id","categorie","closed","user_data","views","reward","tags","question_title","question_text"))
    
-    # if 'categories' not in request.session:
-    request.session['categories']= list(Categorie.objects.all().values("id","title_categorie"))
+    # # if 'categories' not in request.session:
+    # request.session['categories']= list(Categorie.objects.all().values("id","title_categorie"))
     
-    # if 'tags' not in request.session:    
-    request.session['tags']= list(Tag.objects.all().values("id","slug"))
+    # # if 'tags' not in request.session:    
+    # request.session['tags']= list(Tag.objects.all().values("id","slug"))
 
     if request.user.is_anonymous == False:
         user_id = request.user.id
@@ -45,24 +45,30 @@ def mySession(request):
             request.session['img_profil'] =profil.photo_profil.image.url
         except Exception as e:
             pass
-            
-
+                   
     # ***************** end session ***********************
 
 
+def variableGlobal(request):
+    context = {
+        'count_q':Question.objects.count(),
+        'count_a':Answer.objects.count(),
+        'top_questions':Question.objects.order_by('-views','reward')[:5],
+        'dernier_null_list':Question.objects.order_by('-pub_date').filter(answer__isnull=True)[:5],
+        'categories':Categorie.objects.all(),
+        'tags':Tag.objects.all(),
+    }
+
+    return context 
+
 def index1(request):
+
+    contextGlobal = variableGlobal(request)
 
     dernier_question_list = Question.objects.order_by('-pub_date')
     dernier_null_list = Question.objects.order_by('-pub_date').filter(answer__isnull=True)[:10]
     top_questions_null = Question.objects.order_by('-reward').filter(answer__isnull=True,reward__gte=1)[:10]
     top_questions = Question.objects.order_by('-views').filter(reward__gte=1)[:10]
-
-    categories = Categorie.objects.all()
-
-    tags = Tag.objects.all()
-
-    count_q = Question.objects.count()
-    count_a = Answer.objects.count()
 
     mySession(request)
     # food_list = [f for f in Question.objects.order_by('-pub_date')]
@@ -88,16 +94,20 @@ def index1(request):
         'question_top': top_questions,
     }
 
+    context.update(contextGlobal)
+    
     if request.user.is_anonymous:
-        return render(request,'qa/index1.html', {})
+        return render(request,'qa/index1.html', context)
     
     user_id = request.user.id
     user_ob = User.objects.get(id=user_id)
     profil = Profil.objects.get(user=user_ob) 
-    context['profil'] =profil    
+    context['profil'] =profil
+    context['mu'] =settings.MEDIA_URL
+    context['mr'] =settings.MEDIA_ROOT    
     # return render(request,'qa/index2.html', context)
     # return render_to_response('qa/index1.html', context, context_instance=RequestContext(request))
-    template = loader.get_template('qa/index2.html')
+    # template = loader.get_template('qa/index2.html')
     # return HttpResponse(template.render(context))
     # return HttpResponse(template.render(context, request))
     return render(request,'qa/index2.html', context)
@@ -108,12 +118,15 @@ def index2(request):
 @login_required(login_url='/main/login/') 
 def add(request):
 
+    contextGlobal = variableGlobal(request)
+
     dernier_question_list = Question.objects.order_by('-pub_date')
     dernier_null_list = Question.objects.order_by('-pub_date').filter(answer__isnull=True)[:10]
     top_questions_null = Question.objects.order_by('-reward').filter(answer__isnull=True,reward__gte=1)[:10]
     top_questions = Question.objects.order_by('-views').filter(reward__gte=1)[:10]
 
     context = {}
+    context.update(contextGlobal)
     form = QuestionForm()
     context['form'] = form
     if request.user.is_anonymous == True:
@@ -169,19 +182,13 @@ def add(request):
 
 def detail(request, question_id):
 
+    contextGlobal = variableGlobal(request)
     dernier_question_list = Question.objects.order_by('-pub_date')
     dernier_null_list = Question.objects.order_by('-pub_date').filter(answer__isnull=True)[:10]
     top_questions_null = Question.objects.order_by('-reward').filter(answer__isnull=True,reward__gte=1)[:10]
     top_questions = Question.objects.order_by('-views').filter(reward__gte=1)[:10]
 
     mySession(request)
-
-    categories = Categorie.objects.all()
-
-    tags = Tag.objects.all()
-
-    count_q = Question.objects.count
-    count_a = Answer.objects.count
 
     form_a = AnswerForm(None)
    
@@ -216,21 +223,20 @@ def detail(request, question_id):
         raise Http404("Question does not exist")
 
     context = {
-        'count_q': count_q,
-        'count_a': count_a,
         'question_null': dernier_null_list,
         'question_top': top_questions,
-        'tags' : tags,
-        'categories':categories,
         'form_a':form_a,
         'answers': answers, 
         'question': question 
     }
 
+    context.update(contextGlobal)
     return render(request, 'qa/detail.html', context )
 
+@login_required(login_url='/main/login/') 
 def add_answer(request):
 
+    contextGlobal = variableGlobal(request)
     dernier_question_list = Question.objects.order_by('-pub_date')
     dernier_null_list = Question.objects.order_by('-pub_date').filter(answer__isnull=True)[:10]
     top_questions_null = Question.objects.order_by('-reward').filter(answer__isnull=True,reward__gte=1)[:10]
@@ -239,19 +245,8 @@ def add_answer(request):
 
     mySession(request)
 
-
-    categories = Categorie.objects.all()
-
-    tags = Tag.objects.all()
-
-    count_q = Question.objects.count
-    count_a = Answer.objects.count
-
     context = {}
-    context['categories']=categories
-    context['tags']=tags
-    context['count_q']=count_q
-    context['count_a']=count_a
+    context.update(contextGlobal)
 
     if request.method == 'POST':
 
@@ -297,8 +292,10 @@ def add_answer(request):
     # return render(request, 'qa/detail.html', {'question': question})
     return redirect('qa:detail', question_id=question.id)
 
-
+@login_required(login_url='/main/login/') 
 def thumb(request, user_id, question_id, op_code):
+
+    contextGlobal = variableGlobal(request)
 
     user_ob = User.objects.get(id=user_id)
     user = Profil.objects.get(user=user_ob)
@@ -324,6 +321,8 @@ def thumb(request, user_id, question_id, op_code):
     form_a = AnswerForm(None)
 
     context = {'question': question, 'answers': answers , 'form_a':form_a}
+    context.update(contextGlobal)
+
     if QVoter.objects.filter(question_id=question_id, user=user).exists():
         context['message'] = "Vous avez déjà voté sur cette question!"
         return render(request, 'qa/detail.html', context)
@@ -349,9 +348,10 @@ def thumb(request, user_id, question_id, op_code):
 
     return render(request, 'qa/detail.html', context)
 
-
+@login_required(login_url='/main/login/') 
 def vote(request, user_id, answer_id, question_id, op_code):
 
+    contextGlobal = variableGlobal(request)
     user_ob = User.objects.get(id=user_id)
     user = Profil.objects.get(user=user_ob)
     answer = Answer.objects.get(pk=answer_id)
@@ -375,6 +375,7 @@ def vote(request, user_id, answer_id, question_id, op_code):
     form_a = AnswerForm(None)
 
     context = {'question': question, 'answers': answers , 'form_a':form_a}
+    context.update(contextGlobal)
 
     if Answer.objects.filter(id=answer_id, user_data=user).exists():
         context['message']="You cannot vote on your answer!"
@@ -405,22 +406,16 @@ def vote(request, user_id, answer_id, question_id, op_code):
     return render(request, 'qa/detail.html', context)
 
 
-
+@login_required(login_url='/main/login/') 
 def comment(request, answer_id):
 
-    categories = Categorie.objects.all()
-    tags = Tag.objects.all()
-    count_q = Question.objects.count
-    count_a = Answer.objects.count
+    contextGlobal = variableGlobal(request)
+
 
     mySession(request)
 
-    context = {}
-
-    context['categories']=categories
-    context['tags']=tags
-    context['count_q']=count_q
-    context['count_a']=count_a
+    context =  {'answer_id': answer_id, 'message': 'Empty'}
+    context.update(contextGlobal)
 
     if request.user.is_anonymous:
         return HttpResponseRedirect("/accounts/login//")
@@ -434,7 +429,7 @@ def comment(request, answer_id):
         user.save()
 
         if comment_text.strip() == '':
-            return render(request, 'qa/comment.html', {'answer_id': answer_id, 'message': 'Empty'})
+            return render(request, 'qa/comment.html',context)
 
         pub_date = datetime.datetime.now()
         a = Answer.objects.get(pk=answer_id)
@@ -465,19 +460,27 @@ def comment(request, answer_id):
 
         except Question.DoesNotExist:
             raise Http404("Question does not exist")
-        form_a = AnswerForm(None)    
-        return render(request, 'qa/detail.html', {'answers': answers, 'question': question ,'form_a':form_a,} )
+        form_a = AnswerForm(None)  
+        context['answers'] = answers
+        context['question'] = question
+        context['form_a'] = form_a  
+        return render(request, 'qa/detail.html', context )
 
     template = loader.get_template('qa/detail.html')
-    context = {'answer_id': answer_id}
+    context ['answer_id']= answer_id
     # return HttpResponse(template.render(context))
     return HttpResponse(template.render(context, request))
 
 
 
 def search(request):
+
+    contextGlobal = variableGlobal(request)
+
     mySession(request)
 
+    context = {}
+    context.update(contextGlobal)
     if request.method == 'POST':
         word = request.POST['query']
         question_list = Question.objects.filter(Q(question_text__contains=word) | Q(question_title__contains=word))
@@ -494,39 +497,33 @@ def search(request):
 
         dernier_null_list = Question.objects.order_by('-pub_date').filter(tags__slug__contains=word,answer__isnull=True)[:10]
         top_questions = Question.objects.order_by('-reward').filter(tags__slug__contains=word,answer__isnull=True,reward__gte=1)[:10]
-        count_q = Question.objects.count
-        count_a = Answer.objects.count
 
         template = loader.get_template('qa/index.html')
-        tags = Tag.objects.all()
+
 
         context = {
         'questions': questions,
-        'count_q': count_q,
-        'count_a': count_a,
         'question_null': dernier_null_list,
         'question_top': top_questions,
-        'tags' : tags,
         }
+        context.update(contextGlobal)
         return render(request , 'qa/index2.html' , context)
     # return HttpResponse(template.render(context))
     # return HttpResponse(template.render(context, request))
-    return render(request , 'qa/index2.html' , {})
+    return render(request , 'qa/index2.html' , context)
 
 
 
 
 @login_required
 def updateq(request , question_id):
+    contextGlobal = variableGlobal(request)
+
     # template = loader.get_template('qa/add.html')
     mySession(request)
 
     question = Question.objects.get(pk=question_id)
-    count_q = Question.objects.count
-    count_a = Answer.objects.count
     dernier_null_list = Question.objects.order_by('-pub_date').filter(answer__isnull=True)[:10]
-    tags = Tag.objects.all()
-    categories = Categorie.objects.all()
 
     list_tags = question.tags.all()
     form = QuestionForm(instance= question )
@@ -576,19 +573,20 @@ def updateq(request , question_id):
     # return render(request, 'qa/add.html', locals())
     context = {
         'question': question,
-        'count_q': count_q,
-        'count_a': count_a,
         'question_null': dernier_null_list,
-        'categories':categories,
         'list_tags':list_tags,
         }
+    context.update(contextGlobal)
     context['form'] = form
     return render(request, 'qa/updateq.html', context)
 
 
 
-
+@login_required(login_url='/main/login/') 
 def profil(request):
+
+    contextGlobal = variableGlobal(request)
+
     # user_id = request.POST['user']
     mySession(request)
 
@@ -624,9 +622,14 @@ def profil(request):
         'formimg':formimg ,
         # 'id_img':id_img,
     }
+    context.update(contextGlobal)
     return render(request,'qa/profil.html', context)
 
+@login_required(login_url='/main/login/') 
 def updateprofil(request):
+
+    contextGlobal = variableGlobal(request)
+
     mySession(request)
 
     if request.method == 'POST':
@@ -672,13 +675,14 @@ def updateprofil(request):
             'formimg':formimg ,
             # 'id_img':id_img,
         }
-
+        context.update(contextGlobal)
         return render(request,'qa/profil.html', context)
         
     return redirect('qa:profil')
 
 
 def changeimage(request):
+    contextGlobal = variableGlobal(request)
     mySession(request)
 
     if request.method == 'POST':
@@ -698,6 +702,7 @@ def changeimage(request):
 
 
 def tag(request, tag):
+    contextGlobal = variableGlobal(request)
     word = tag
     latest_question_list = Question.objects.filter(tags__slug__contains=word)
     paginator = Paginator(latest_question_list, 10)
@@ -713,23 +718,21 @@ def tag(request, tag):
 
     latest_noans_list = Question.objects.order_by('-pub_date').filter(tags__slug__contains=word,answer__isnull=True)[:10]
     top_questions = Question.objects.order_by('-reward').filter(tags__slug__contains=word,answer__isnull=True,reward__gte=1)[:10]
-    count = Question.objects.count
-    count_a = Answer.objects.count
 
     template = loader.get_template('qa/index2.html')
     context = {
     'questions': questions,
-    'totalcount': count,
-    'anscount': count_a,
     'noans': latest_noans_list,
     'reward': top_questions,
     }
+    context.update(contextGlobal)
     # return HttpResponse(template.render(context))
     return render(request, 'qa/index2.html' , context)
 
 
-
+@login_required(login_url='/main/login/') 
 def closequestion(request):
+    contextGlobal = variableGlobal(request)
     if request.method == 'POST':
         action = request.POST['closequestion']
         question_id = request.POST['question_id']
