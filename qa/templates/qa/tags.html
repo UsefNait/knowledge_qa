@@ -2,32 +2,30 @@
 {% load django_markdown %}
 {% load static %}
 {% load crispy_forms_tags %}
-
+{% load widget_tweaks %}
 
 
 
 {% block content %}
-
 <!-- =-=-=-=-=-=-= Main Area =-=-=-=-=-=-= -->
-
 <div class="main-content-area">
 
     <!-- =-=-=-=-=-=-= Page Breadcrumb =-=-=-=-=-=-= -->
     <section class="page-title">
       <div class="container">
         <div class="row">
-          <div class="col-md-6 col-sm-7 co-xs-12 text-left">
-            <h1>Post Your Question</h1>
+          <div class="col-md-6 col-sm-7 col-xs-12 text-left">
+            <h1>{{ user.username }}</h1>
           </div>
           <!-- end col -->
-          <div class="col-md-6 col-sm-5 co-xs-12 text-right">
+          <div class="col-md-6 col-sm-5 col-xs-12 text-right">
             <div class="bread">
               <ol class="breadcrumb">
                 <li><a href="#">Home</a>
                 </li>
                 <li><a href="#">Pages</a>
                 </li>
-                <li class="active">Post Question</li>
+                <li class="active">Profile</li>
               </ol>
             </div>
             <!-- end bread -->
@@ -40,86 +38,71 @@
     </section>
 
     <!-- =-=-=-=-=-=-= Page Breadcrumb End =-=-=-=-=-=-= -->
-
-    <!-- =-=-=-=-=-=-= Post Question  =-=-=-=-=-=-= -->
-    <section class="section-padding-80 white" id="post-question">
+    
+ <!-- =-=-=-=-=-=-= User Form Settings =-=-=-=-=-=-= -->
+    <section class="section-padding-80" id="login">
       <div class="container">
         <div class="row">
-          <div class="col-sm-12 col-md-8 ">
+
+          <div class="col-md-12">
 
             <div class="box-panel">
 
-              <h2>Post Your Question</h2>
-              <p> </p>
+              <center><h1>List Tags</h1></center>
+
               <hr>
-              <!-- form login -->
-              <form class="margin-top-40" method="post">
-                 {% csrf_token %}
-                <div class="form-group">
-                  <label>Question Title</label>
-                  <input name="titre" type="text" placeholder="Bootstrap Not Working" class="form-control">
-                </div>
-                <div class="form-group">
-                  <label>Category</label>
-                  <!-- <select name="categorie" class="questions-category form-control chosen-container chosen-container-single">
-                    <option value="0" disabled select>All Categories</option>
-                    <option value="36">Php</option>
-                  </select> -->
-                  <select name="categorie" class="questions-category form-control chosen-container chosen-container-single">
-                    <option value="0" disabled selected>select Categories</option>
-                    {% for cat in categories %}
-                      <option value="{{ cat.id }}" >{{ cat.title_categorie }}</option>
-                    {% endfor %}
-                  </select>
-
-
-                </div>
-
-                <input type="hidden" value="{{ user.id }}" name="user" />
-
-                <div class="form-group">
-                  <label>Tags</label>
-
-                  <input name="tags" type="text" id="tags" value="Php,Laravel,Bootstrap" class="form-control" data-role="tagsinput">
-                </div>
-
-
-                <div class="form-group " >
-                  <label>Question Detials</label>
-                  <div>
-                  {{ form.media }}
-                  {{ form.question_text }}
-                </div>
-                </div>
-
-                <button class="btn btn-primary pull-right">Publish Your Question</button>
-
-              </form>
-              <!-- form login -->
-
+              <h3>#A</h3>
+              <ul>
+              	{% for t in tag_a %}
+              	<li class="col-md-4" >{{ t.slug }}</li>
+              	{% endfor %}
+              </ul>
+				<br>
+              <hr>
+               <h3>#B</h3>
+              <ul>
+              	{% for t in tag_b %}
+              	<li class="col-md-4" >{{ t.slug }}</li>
+              	{% endfor %}
+              </ul>
+				<br>
+              <hr>
+               <h3>#C</h3>
+              <ul>
+              	{% for t in tag_c %}
+              	<li class="col-md-4" >{{ t.slug }}</li>
+              	{% endfor %}
+              </ul>
+				<br>
+              <hr>
+              <hr>
+              <hr>
+              <hr>
+              <hr>
+              <hr>
+              <hr>
+              <hr>
+              <hr>
+              <hr>
+              <hr>
+              <hr>
+              <hr>
+              <hr>
+              <hr>
+              <hr>
+              <hr>
             </div>
           </div>
 
-          <!-- Blog Right Sidebar -->
-          <div class="col-sm-12 col-xs-12 col-md-4">
-
-            <!-- sidebar -->
-               <div class="side-bar">
-            {% include 'qa/right_sidebar.html' %}
-              </div>
-            <!-- sidebar end -->
-
-          </div>
-          <!-- Blog Right Sidebar End -->
           <div class="clearfix"></div>
         </div>
       </div>
       <!-- end container -->
     </section>
-    <!-- =-=-=-=-=-=-= Post QuestionEnd =-=-=-=-=-=-= -->
-
+ <!-- =-=-=-=-=-=-= User Form Settings End =-=-=-=-=-=-= -->
+ 
     <!-- =-=-=-=-=-=-= Our Clients =-=-=-=-=-=-= -->
-    <section class="custom-padding" id="clients">
+    <section class="custom-padding white" id="clients">
       <div class="container">
 
         <!-- Row -->
@@ -206,7 +189,6 @@
     <!-- =-=-=-=-=-=-= Our Clients -end =-=-=-=-=-=-= -->
 
   </div>
-
-<!-- =-=-=-=-=-=-= Main Area End =-=-=-=-=-=-= -->
+<!-- =-=-=-=-=-=-= Main Area End =-=-=-=-=-=-= -->              
 
 {% endblock content %}

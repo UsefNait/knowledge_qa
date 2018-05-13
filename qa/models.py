@@ -68,6 +68,7 @@ class Question(models.Model):
     user_data = models.ForeignKey('main_app.Profil', on_delete=True)
     closed = models.BooleanField(default=False)
     categorie = models.ForeignKey(Categorie, on_delete=True,null=True,blank=True)
+    type_pub = models.CharField(max_length=200 , default='question')
 
 
     def __str__(self):

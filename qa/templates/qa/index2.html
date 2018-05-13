@@ -48,8 +48,8 @@
 									</li>
 									<li > <a data-toggle="tab" href="#tab3"><i class="icofont icon-layers"></i><span class="hidden-xs">Questions -No answers</span></a> 
 									</li>
-									<li> <a data-toggle="tab" href="#tab4"><i class="icofont icon-linegraph"></i><span class="hidden-xs">No answers...</span></a> 
-									</li>
+									<!-- <li> <a data-toggle="tab" href="#tab4"><i class="icofont icon-linegraph"></i><span class="hidden-xs">No answers...</span></a> 
+									</li> -->
 								</ul>
 							</div>
 						</div>
@@ -146,7 +146,7 @@
 															{% if question.user_data.photo_profil.image.url %}
 																<img alt="" class="img-responsive center-block" src="{{ question.user_data.photo_profil.image.url }}">
 															{% else %}
-										                      <img class="img-sm"  src='{% static "qa/user.png" %}'>
+										                      <img class="img-sm"  src='{% static "images/p1.png" %}'>
 										                    {% endif %}
 														</a>
 													</div>
@@ -196,7 +196,7 @@
 															{% if question.user_data.photo_profil.image.url %}
 																<img alt="" class="img-responsive center-block" src="{{ question.user_data.photo_profil.image.url }}">
 															{% else %}
-										                      <img class="img-sm"  src='{% static "qa/user.png" %}'>
+										                      <img class="img-sm"  src='{% static "images/p1.png" %}'>
 										                    {% endif %}
 														</a>
 													</div>

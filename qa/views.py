@@ -70,7 +70,7 @@ def index1(request):
     top_questions_null = Question.objects.order_by('-reward').filter(answer__isnull=True,reward__gte=1)[:10]
     top_questions = Question.objects.order_by('-views').filter(reward__gte=1)[:10]
 
-    mySession(request)
+    
     # food_list = [f for f in Question.objects.order_by('-pub_date')]
     # data = serializers.serialize("xml", Question.objects.order_by('-pub_date'))
     # food_list.append()
@@ -96,15 +96,16 @@ def index1(request):
 
     context.update(contextGlobal)
     
-    if request.user.is_anonymous:
-        return render(request,'qa/index1.html', context)
-    
-    user_id = request.user.id
-    user_ob = User.objects.get(id=user_id)
-    profil = Profil.objects.get(user=user_ob) 
-    context['profil'] =profil
-    context['mu'] =settings.MEDIA_URL
-    context['mr'] =settings.MEDIA_ROOT    
+    # if request.user.is_anonymous:
+    #     return render(request,'qa/index1.html', context)
+    if request.user.is_anonymous == False:
+        mySession(request)
+        user_id = request.user.id
+        user_ob = User.objects.get(id=user_id)
+        profil = Profil.objects.get(user=user_ob) 
+        context['profil'] =profil
+        context['mu'] =settings.MEDIA_URL
+        context['mr'] =settings.MEDIA_ROOT    
     # return render(request,'qa/index2.html', context)
     # return render_to_response('qa/index1.html', context, context_instance=RequestContext(request))
     # template = loader.get_template('qa/index2.html')
@@ -113,7 +114,9 @@ def index1(request):
     return render(request,'qa/index2.html', context)
 
 def index2(request):
-    return render(request,'qa/index2.html', {})    
+    if request.user.is_anonymous == False:
+        return redirect('qa:index1')
+    return render(request,'qa/index1.html', {})    
 
 @login_required(login_url='/main/login/') 
 def add(request):
@@ -414,7 +417,7 @@ def comment(request, answer_id):
 
     mySession(request)
 
-    context =  {'answer_id': answer_id, 'message': 'Empty'}
+    context =  {'answer_id': answer_id}
     context.update(contextGlobal)
 
     if request.user.is_anonymous:
@@ -429,6 +432,7 @@ def comment(request, answer_id):
         user.save()
 
         if comment_text.strip() == '':
+            context['message']='Empty'
             return render(request, 'qa/comment.html',context)
 
         pub_date = datetime.datetime.now()
@@ -744,14 +748,65 @@ def closequestion(request):
             'question':question,
             'close':question.closed
         }
-    return redirect('qa:profil')    
-    return render(request, 'qa/profil.html', context)  
+    return redirect('qa:myquestion')    
+    return render(request, 'qa/my_question.html', context)  
 
 
 
 
 
+def list_tags(request):
+    context = {
+    'tag_a' : Tag.objects.filter(slug__istartswith='a'),
+    'tag_b' : Tag.objects.filter(slug__istartswith='b'),
+    'tag_c' : Tag.objects.filter(slug__istartswith='c'),
+    'tag_d' : Tag.objects.filter(slug__istartswith='d'),
+    'tag_e' : Tag.objects.filter(slug__istartswith='e'),
+    'tag_f' : Tag.objects.filter(slug__istartswith='f'),
+    'tag_g' : Tag.objects.filter(slug__istartswith='g'),
+    'tag_h' : Tag.objects.filter(slug__istartswith='h'),
+    'tag_i' : Tag.objects.filter(slug__istartswith='i'),
+    }
+    return render(request, 'qa/tags.html', context) 
 
+
+
+
+@login_required(login_url='/main/login/') 
+def myquestion(request):
+
+    contextGlobal = variableGlobal(request)
+
+    # user_id = request.POST['user']
+    mySession(request)
+
+    user_id = request.user.id
+    user_ob = get_object_or_404(User, pk=user_id)
+    profil = Profil.objects.get(user=user_ob)
+    nbQusetion = profil.question_set.count
+    nbAnswer = profil.answer_set.count 
+    questions = profil.question_set.all()
+    # id_img = profil.photo_profil.image
+    paginator = Paginator(questions, 10)
+    page = request.GET.get('page')
+    try:
+        mesQusetion = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        mesQusetion = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        mesQusetion = paginator.page(paginator.num_pages)
+
+
+    context = {
+        'nbQusetion': nbQusetion,
+        'nbAnswer': nbAnswer ,
+        'profil' : profil ,
+        'mesQusetion':mesQusetion,
+    }
+    context.update(contextGlobal)
+    return render(request,'qa/my_question.html', context)
 
 # def index(request):
 

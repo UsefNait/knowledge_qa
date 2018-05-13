@@ -75,10 +75,10 @@
                     </li>
                   </ul>
                   <ul class="profile-connect">
-                    <li><a title="" href="#">Follow</a>
+                    <!-- <li><a title="" href="#">Follow</a>
                     </li>
                     <li><a title="" href="#">Hire Me</a>
-                    </li>
+                    </li> -->
                   </ul>
                 </div>
               </div>
@@ -130,8 +130,6 @@
               <div class="col-sm-12">
             <ul class="nav nav-tabs">
                 <li class="active"><a data-toggle="tab" href="#home">Home</a></li>
-                <li><a data-toggle="tab" href="#messages">Menu 1</a></li>
-                <li><a data-toggle="tab" href="#settings">Menu 2</a></li>
               </ul>
 
               
@@ -253,174 +251,8 @@
                       <button class="btn btn-lg btn-success pull-right" style="margin: 15px;" type="submit"><i class="glyphicon glyphicon-ok-sign"></i> Save</button>
                 </form>
               
-              <hr>
               
              </div><!--/tab-pane-->
-             <div class="tab-pane" id="messages">
-               
-               <h2></h2>
-               
-               <hr>
-                  <form class="form" action="##" method="post" id="registrationForm">
-                      <div class="form-group">
-                          
-                          <div class="col-xs-6">
-                              <label for="first_name"><h4>First name</h4></label>
-                              <input type="text" class="form-control" name="first_name" id="first_name" placeholder="first name" title="enter your first name if any.">
-                          </div>
-                      </div>
-                      <div class="form-group">
-                          
-                          <div class="col-xs-6">
-                            <label for="last_name"><h4>Last name</h4></label>
-                              <input type="text" class="form-control" name="last_name" id="last_name" placeholder="last name" title="enter your last name if any.">
-                          </div>
-                      </div>
-          
-                      <div class="form-group">
-                          
-                          <div class="col-xs-6">
-                              <label for="phone"><h4>Phone</h4></label>
-                              <input type="text" class="form-control" name="phone" id="phone" placeholder="enter phone" title="enter your phone number if any.">
-                          </div>
-                      </div>
-          
-                      <div class="form-group">
-                          <div class="col-xs-6">
-                             <label for="mobile"><h4>Mobile</h4></label>
-                              <input type="text" class="form-control" name="mobile" id="mobile" placeholder="enter mobile number" title="enter your mobile number if any.">
-                          </div>
-                      </div>
-                      <div class="form-group">
-                          
-                          <div class="col-xs-6">
-                              <label for="email"><h4>Email</h4></label>
-                              <input type="email" class="form-control" name="email" id="email" placeholder="you@email.com" title="enter your email.">
-                          </div>
-                      </div>
-                      <div class="form-group">
-                          
-                          <div class="col-xs-6">
-                              <label for="email"><h4>Location</h4></label>
-                              <input type="email" class="form-control" id="location" placeholder="somewhere" title="enter a location">
-                          </div>
-                      </div>
-                      <div class="form-group">
-                          
-                          <div class="col-xs-6">
-                              <label for="password"><h4>Password</h4></label>
-                              <input type="password" class="form-control" name="password" id="password" placeholder="password" title="enter your password.">
-                          </div>
-                      </div>
-                      <div class="form-group">
-                          
-                          <div class="col-xs-6">
-                            <label for="password2"><h4>Verify</h4></label>
-                              <input type="password" class="form-control" name="password2" id="password2" placeholder="password2" title="enter your password2.">
-                          </div>
-                      </div>
-                      <div class="form-group">
-                           <div class="col-xs-12">
-                                <br>
-                                <button class="btn btn-lg btn-success" type="submit"><i class="glyphicon glyphicon-ok-sign"></i> Save</button>
-                                <button class="btn btn-lg" type="reset"><i class="glyphicon glyphicon-repeat"></i> Reset</button>
-                            </div>
-                      </div>
-                </form>
-               
-             </div><!--/tab-pane-->
-             <div class="tab-pane" id="settings">
-                
-                
-                  <hr>
-                     <table class="col-md-12" border="1" width="100%">
-                        <thead>
-                            <th data-field="id">Titre</th>
-                          <th data-field="salary" data-sortable="true">Date de publication</th>
-                          <th data-field="country" data-sortable="true">Status</th>
-                          <th data-field="city">Actions</th>
-                        </thead>
-                        <tbody>
-                          {% for q in  mesQusetion %}
-                            <tr>
-                              <td style="padding: 5px;" >{{ q.question_title|truncatechars_html:50 }}</td>
-                              <td style="padding: 5px;">{{ q.pub_date }}</td>
-                              <td style="padding: 5px;">
-                                {% if q.closed == False %}
-                                <span class="label-success label label-default">Ouverte</span>
-                                {% else %}
-                                <span class="label-warning label label-default">Fermer</span>
-                                {% endif %}
-                              </td>
-
-                              <td style="padding: 5px;">
-                                <form action="/q/{{ q.id }}"/>
-                                <button class="btn btn-success btn-sm"  >
-                                    <i class="glyphicon glyphicon-zoom-in icon-white"></i>
-                                    View
-                                </button>
-                                </form>
-                                <a class="btn btn-info btn-sm" href="/updateq/{{ q.id }}" style="margin-bottom: 5px; margin-top: 5px;">
-                                    <i class="glyphicon glyphicon-edit icon-white"></i>
-                                    Edit
-                                </a>
-                                <br>
-                                <form method="post" action="/closequestion/">
-                                  {% csrf_token %} 
-                                  <input type="hidden" name="question_id" value="{{ q.id }}">
-                                <button class="btn btn-danger btn-sm" >
-                                {% if q.closed == False %}
-                                    <input type="hidden" name="closequestion" value="True">
-
-                                    <i class=" glyphicon glyphicon-remove icon-white"></i>
-                                    Fermer
-                       
-                                    {% else %}
-                                   <input type="hidden" name="closequestion" value="False">
-                                    <i class="glyphicon glyphicon-ok icon-white"></i>
-                                    Open
-                               
-                                    {% endif %}
-                                   </button>
-                                 </form> 
-                                <!-- <a rel="tooltip" title="Like" class="table-action like" href="javascript:void(0)"><i class="fa fa-heart"></i></a>
-                                <br>
-                                <a rel="tooltip" title="Edit" class="table-action edit" href="javascript:void(0)"><i class="fa fa-edit"></i></a>
-                                <br>
-                                <a rel="tooltip" title="Remove" class="table-action remove" href="javascript:void(0)"><i class="fa fa-remove"></i></a> -->
-                              </td>
-                            </tr>
-                          {% endfor %}  
-                        </tbody>
-                    </table>
-                    
-                    <!-- Pagination View More -->
-                    <div class="text-center clearfix">
-                      <!-- <button class="btn btn-primary btn-lg">View All Question</button> -->
-                      <div class="pagination center-block">
-                                <span class="step-links">
-                                 <div class="clearfix"></div>
-                                  <nav aria-label="">
-                                    <ul class="pager">
-                                      {% if mesQusetion.has_previous %}
-                                          <li><a href="?page={{ mesQusetion.previous_page_number }}">Précédent</a></li>
-                                      {% endif %}
-
-                                       <span class="current">
-                                         {{ mesQusetion.number }} / {{ mesQusetion.paginator.num_pages }}
-                                      </span>
-
-                                      {% if mesQusetion.has_next %}
-                                          <li><a href="?page={{ mesQusetion.next_page_number }}">Suivant</a></li>
-                                      {% endif %}
-                                    </ul>
-                                  </nav>
-                                </span>
-                      </div>
-                    </div>
-                    <!-- Pagination View More End -->
-                    
-              </div>
                
               </div><!--/tab-pane-->
           </div><!--/tab-content-->

@@ -104,12 +104,12 @@
 
                 <!-- ******* vote Questions ************** -->
                 <div class="pad-ver pull-right">
-
+                                {% if user.is_authenticated %}
                                   <a class="btn btn-sm btn-default btn-hover-success" data-toggle="tooltip" data-placement="bottom" data-original-title="Like This Answer" href="/thumb/{{ user.id }}/{{ question.id }}/0/"><i class="fa fa-thumbs-up"></i>
                                   </a>
                                   {{ question.qvoter_set.count }}
                                   <a class="btn btn-sm btn-default btn-hover-danger" href="/thumb/{{ user.id }}/{{ question.id }}/1/" data-original-title="Spam" data-placement="bottom" data-toggle="tooltip"><i class="fa fa-thumbs-down"></i></a>
-
+                                {% endif %}
                   </div>
                 <!-- ******* end vote Questions ************** -->                                
               </div>
@@ -142,7 +142,7 @@
                 <div class="media-body">
                   <div class="mar-btm">
 
-                    {% if user.id == question.user_data.user.id  %}
+                    {% if user.id == answer.user_data.user.id  %}
                       <form>
                         <button class="btncomt pull-right" > <li class="glyphicon glyphicon-edit" ></li> update</button>
                       </form>
@@ -252,6 +252,7 @@ function myFunction(a_id) {
             {% endif %}
 
             {% if user.is_authenticated %}
+            {% if question.closed == False %}
              <form method="post" action="/answer/">
                  {% csrf_token %}
                 <div class="form-group">
@@ -266,6 +267,11 @@ function myFunction(a_id) {
                 <button class="btn btn-primary btn-lg btn-block">Post Your Answer</button>
 
               </form>
+              {% else %}
+              <h2>La question est fermer</h2>
+              {% endif %}
+              {% else %}
+              <a href="">Login , or Register</a>
              {% endif %} 
             <!-- Thread Reply End -->
           </div>
@@ -295,19 +301,19 @@ function myFunction(a_id) {
                   <div class="row text-center">
                     <div class="col-xs-6 push-inner-top-bottom border-right">
                       <h3 class="widget-heading"><!-- <i class="fa-icon-question-sign"></i>  --><br>
-                                            <small><strong>34,157</strong> Experience</small></h3>
+                                            <small><strong>{{ question.user_data.points }}</strong> Points</small></h3>
                     </div>
                     <div class="col-xs-6 push-inner-top-bottom">
                       <h3 class="widget-heading"><!-- <i class=" icon-profile-male themed-color-social push"></i> --> <br>
-                                            <small><strong>58.6k</strong> Followers</small></h3>
+                                            <small><strong>{{ question.user_data.answer_set.count }}</strong> Answers</small></h3>
                     </div>
                   </div>
                 </div>
-                <div class="widget-content border-bottom">
+                <!-- <div class="widget-content border-bottom">
                   <h4>About</h4>
                   <p>Proin ac nibh rutrum lectus rhoncus eleifend. Sed porttitor pretium venenatis. Suspendisse potenti. Aliquam quis ligula elit.</p>
                   <p>Sed porttitor pretium venenatis. Suspendisse potenti. Aliquam quis ligula elit. Aliquam at orci ac neque semper dictum.</p>
-                </div>
+                </div> -->
                 <div class="widget-content">
 
                   <div class="btn-group"> <a title="" data-toggle="tooltip" class="btn btn-default" href="javascript:void(0)" data-original-title="Facebook"><i class="fa fa-facebook fa-fw"></i></a> <a title="" data-toggle="tooltip" class="btn btn-default" href="javascript:void(0)" data-original-title="Twitter"><i class="fa fa-twitter fa-fw"></i></a> <a title="" data-toggle="tooltip" class="btn btn-default" href="javascript:void(0)" data-original-title="Google Plus"><i class="fa fa-google-plus fa-fw"></i></a> <a title="" data-toggle="tooltip" class="btn btn-default" href="javascript:void(0)" data-original-title="Pinterest"><i class="fa fa-pinterest fa-fw"></i></a> <a title="" data-toggle="tooltip" class="btn btn-default" href="javascript:void(0)" data-original-title="Dribbble"><i class="fa fa-dribbble fa-fw"></i></a> </div>
