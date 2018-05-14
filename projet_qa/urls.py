@@ -18,13 +18,17 @@ from django.contrib import admin
 from django.urls import path ,re_path,include
 from django.conf import settings
 from django.conf.urls.static import static
-
+from django.conf.urls.i18n import i18n_patterns
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('main/', include('main_app.urls')),
     # path('qa/', include('qa.urls')),
-    path('', include('qa.urls')),
+    # path('', include('qa.urls')),
     url(r'^markdown/', include("django_markdown.urls")),
     url(r'^markdownx/', include('markdownx.urls')),
     url(r'^ckeditor/', include('ckeditor_uploader.urls')),
-] + static (settings.MEDIA_URL , document_root=settings.MEDIA_ROOT)
+] 
+urlpatterns += i18n_patterns(
+    path('', include('qa.urls')) ,
+    prefix_default_language=False,
+    )+ static (settings.MEDIA_URL , document_root=settings.MEDIA_ROOT)

@@ -15,6 +15,23 @@ from django.core import serializers
 from django.db.models import Q
 # Create your views here.
 
+# def changeimage(request):
+#     contextGlobal = variableGlobal(request)
+#     mySession(request)
+
+#     if request.method == 'POST':
+#         img = Image()
+#         formimg = PhotoForm(request.POST)
+#         img.image = formimg.image
+#         img.save()
+#         user_id = request.POST['user']
+#         # user_id = request.user.id
+#         user_ob = User.objects.get(id=user_id)
+#         profil = Profil.objects.get(user=user_ob)
+#         profil.photo_profil = img 
+#         return redirect('qa:profil')
+#     return redirect('qa:profil')
+
 def mySession(request):
         # ***************** session ***********************
     # count_q = Question.objects.count()
@@ -51,10 +68,10 @@ def mySession(request):
 
 def variableGlobal(request):
     context = {
-        'count_q':Question.objects.count(),
-        'count_a':Answer.objects.count(),
-        'top_questions':Question.objects.order_by('-views','reward')[:5],
-        'dernier_null_list':Question.objects.order_by('-pub_date').filter(answer__isnull=True)[:5],
+        'count_q':Question.objects.filter(type_pub='question').count(),
+        'count_a':Answer.objects.filter(question__type_pub='question').count(),
+        'top_questions':Question.objects.order_by('-views','reward').filter(type_pub='question')[:5],
+        'dernier_null_list':Question.objects.order_by('-pub_date').filter(answer__isnull=True , type_pub='question')[:5],
         'categories':Categorie.objects.all(),
         'tags':Tag.objects.all(),
     }
@@ -65,10 +82,10 @@ def index1(request):
 
     contextGlobal = variableGlobal(request)
 
-    dernier_question_list = Question.objects.order_by('-pub_date')
-    dernier_null_list = Question.objects.order_by('-pub_date').filter(answer__isnull=True)[:10]
-    top_questions_null = Question.objects.order_by('-reward').filter(answer__isnull=True,reward__gte=1)[:10]
-    top_questions = Question.objects.order_by('-views').filter(reward__gte=1)[:10]
+    dernier_question_list = Question.objects.filter(type_pub='question').order_by('-pub_date')
+    dernier_null_list = Question.objects.order_by('-pub_date').filter(answer__isnull=True , type_pub='question')[:10]
+    top_questions_null = Question.objects.order_by('-reward').filter(answer__isnull=True,reward__gte=1 ,type_pub='question')[:10]
+    top_questions = Question.objects.order_by('-views').filter(reward__gte=1 , type_pub='question')[:10]
 
     
     # food_list = [f for f in Question.objects.order_by('-pub_date')]
@@ -123,10 +140,10 @@ def add(request):
 
     contextGlobal = variableGlobal(request)
 
-    dernier_question_list = Question.objects.order_by('-pub_date')
-    dernier_null_list = Question.objects.order_by('-pub_date').filter(answer__isnull=True)[:10]
-    top_questions_null = Question.objects.order_by('-reward').filter(answer__isnull=True,reward__gte=1)[:10]
-    top_questions = Question.objects.order_by('-views').filter(reward__gte=1)[:10]
+    dernier_question_list = Question.objects.filter(type_pub='question').order_by('-pub_date')
+    dernier_null_list = Question.objects.order_by('-pub_date').filter(answer__isnull=True , type_pub='question')[:10]
+    top_questions_null = Question.objects.order_by('-reward').filter(answer__isnull=True,reward__gte=1 , type_pub='question')[:10]
+    top_questions = Question.objects.order_by('-views').filter(reward__gte=1 , type_pub='question')[:10]
 
     context = {}
     context.update(contextGlobal)
@@ -186,10 +203,10 @@ def add(request):
 def detail(request, question_id):
 
     contextGlobal = variableGlobal(request)
-    dernier_question_list = Question.objects.order_by('-pub_date')
-    dernier_null_list = Question.objects.order_by('-pub_date').filter(answer__isnull=True)[:10]
-    top_questions_null = Question.objects.order_by('-reward').filter(answer__isnull=True,reward__gte=1)[:10]
-    top_questions = Question.objects.order_by('-views').filter(reward__gte=1)[:10]
+    dernier_question_list = Question.objects.filter(type_pub='question').order_by('-pub_date')
+    dernier_null_list = Question.objects.order_by('-pub_date').filter(answer__isnull=True , type_pub='question')[:10]
+    top_questions_null = Question.objects.order_by('-reward').filter(answer__isnull=True,reward__gte=1, type_pub='question')[:10]
+    top_questions = Question.objects.order_by('-views').filter(reward__gte=1 , type_pub='question')[:10]
 
     mySession(request)
 
@@ -240,10 +257,10 @@ def detail(request, question_id):
 def add_answer(request):
 
     contextGlobal = variableGlobal(request)
-    dernier_question_list = Question.objects.order_by('-pub_date')
-    dernier_null_list = Question.objects.order_by('-pub_date').filter(answer__isnull=True)[:10]
-    top_questions_null = Question.objects.order_by('-reward').filter(answer__isnull=True,reward__gte=1)[:10]
-    top_questions = Question.objects.order_by('-views').filter(reward__gte=1)[:10]
+    dernier_question_list = Question.objects.filter(type_pub='question').order_by('-pub_date')
+    dernier_null_list = Question.objects.order_by('-pub_date').filter(answer__isnull=True , type_pub='question')[:10]
+    top_questions_null = Question.objects.order_by('-reward').filter(answer__isnull=True,reward__gte=1 , type_pub='question')[:10]
+    top_questions = Question.objects.order_by('-views').filter(reward__gte=1 , type_pub='question' )[:10]
 
 
     mySession(request)
@@ -684,23 +701,6 @@ def updateprofil(request):
         
     return redirect('qa:profil')
 
-
-def changeimage(request):
-    contextGlobal = variableGlobal(request)
-    mySession(request)
-
-    if request.method == 'POST':
-        img = Image()
-        formimg = PhotoForm(request.POST)
-        img.image = formimg.image
-        img.save()
-        user_id = request.POST['user']
-        # user_id = request.user.id
-        user_ob = User.objects.get(id=user_id)
-        profil = Profil.objects.get(user=user_ob)
-        profil.photo_profil = img 
-        return redirect('qa:profil')
-    return redirect('qa:profil')
     
 
 

@@ -24,8 +24,9 @@ urlpatterns = [
     re_path(r'^updateprofil/$', views.updateprofil, name='updateprofil'),
     re_path(r'^tag/(?P<tag>\w+)/$', views.tag, name='tag'),
  #    re_path(r'^categorie/$', views.categorie, name='categorie'),
- 	re_path(r'^change_img/$', views.changeimage, name='changeimage'),
+ 	# re_path(r'^change_img/', views.changeimage, name='changeimage'),
     re_path(r'^list_tags', views.list_tags, name='list_tags'),
     re_path(r'^my_question', views.myquestion, name='myquestion'),
+    # re_path(r'^changephotoprofil', views.changephotoprofil, name="changephotoprofil"),
     
 ]
